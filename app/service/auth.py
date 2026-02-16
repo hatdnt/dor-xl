@@ -194,17 +194,42 @@ class Auth:
     
     def get_active_user(self):
         if not self.active_user:
-            # Choose the first user if available
-            if len(self.refresh_tokens) != 0:
+            # Try to reload from KV if available (crucial for serverless cold starts)
+            if self.kv_client:
+                self.load_tokens_from_kv()
+                self.load_active_number_from_kv()
+                
+            if not self.active_user and len(self.refresh_tokens) != 0:
+                # Choose the first user if available
                 first_rt = self.refresh_tokens[0]
+                print(f"Restoring session for {first_rt['number']}...")
                 tokens = get_new_token(self.api_key, first_rt["refresh_token"], first_rt.get("subscriber_id", ""))
                 if tokens:
                     self.set_active_user(first_rt["number"])
-            return None
+            
+            # If still None, return None
+            if not self.active_user:
+                if len(self.refresh_tokens) == 0:
+                    print("No users found in storage.")
+                else:
+                    print(f"Failed to restore active user from {len(self.refresh_tokens)} stored tokens.")
+                return None
+            
+            # SUCCESS: Return the restored active user
+            return self.active_user
         
+        # Token renewal logic (every 5 minutes)
         if self.last_refresh_time is None or (int(time.time()) - self.last_refresh_time) > 300:
-            self.renew_active_user_token()
-            self.last_refresh_time = time.time()
+            print(f"Renewing tokens for {self.active_user['number']}...")
+            success = self.renew_active_user_token()
+            if success:
+                self.last_refresh_time = int(time.time())
+            else:
+                # If renewal fails, we might want to try re-loading from KV 
+                # just in case another instance successfully renewed it.
+                if self.kv_client:
+                    self.load_tokens_from_kv()
+                    self.load_active_number_from_kv()
         
         return self.active_user
     

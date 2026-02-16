@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 export default function PurchasePage() {
@@ -8,6 +8,13 @@ export default function PurchasePage() {
     const [variants, setVariants] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+
+    useEffect(() => {
+        const savedCode = localStorage.getItem("last_family_code");
+        if (savedCode) {
+            setFamilyCode(savedCode);
+        }
+    }, []);
 
     // For detail view
     const [selectedDetail, setSelectedDetail] = useState<any>(null);
@@ -36,6 +43,7 @@ export default function PurchasePage() {
             .then(data => {
                 if (data.status === "SUCCESS") {
                     setVariants(data.data.package_variants || []);
+                    localStorage.setItem("last_family_code", familyCode);
                 } else {
                     setError(data.detail || data.message || "Gagal mengambil data family");
                 }
