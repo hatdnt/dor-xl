@@ -31,6 +31,9 @@ def health_check():
         "status": "OK",
         "timestamp": datetime.now().isoformat(),
         "kv_connected": AuthInstance.kv_client is not None,
+        "token_count": len(AuthInstance.refresh_tokens),
+        "has_active_user": AuthInstance.active_user is not None,
+        "storage_mode": "KV" if AuthInstance.kv_client else "LOCAL_TMP"
     }
     return health
 

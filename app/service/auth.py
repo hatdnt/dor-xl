@@ -53,14 +53,19 @@ class Auth:
             if kv_url:
                 try:
                     self.kv_client = redis.from_url(kv_url, decode_responses=True)
-                    print("Vercel KV connected.")
+                    self.kv_client.ping() # Verify connection
+                    print("Vercel KV connected and verified.")
                 except Exception as e:
-                    print(f"Failed to connect to Vercel KV: {e}")
+                    self.kv_client = None
+                    print(f"Failed to connect/verify Vercel KV: {e}")
 
             if self.kv_client:
+                print("Using Vercel KV for persistence.")
                 self.load_tokens_from_kv()
                 self.load_active_number_from_kv()
             else:
+                print("WARNING: KV_URL not found or connection failed. Using ephemeral /tmp storage.")
+                # This will reset after ~10 mins of inactivity on Vercel
                 tokens_path = get_writable_path("refresh-tokens.json")
                 if os.path.exists(tokens_path):
                     self.load_tokens()
