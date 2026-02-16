@@ -25,6 +25,46 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/api/health")
+def health_check():
+    health = {
+        "status": "OK",
+        "timestamp": datetime.now().isoformat(),
+        "kv_connected": AuthInstance.kv_client is not None,
+    }
+    return health
+
+@app.get("/api/debug/connectivity")
+def test_connectivity():
+    import socket
+    import requests
+    
+    results = {}
+    
+    # Test DNS for XL API
+    target_host = "gede.ciam.xlaxiata.co.id"
+    try:
+        ip = socket.gethostbyname(target_host)
+        results["dns_xl"] = {"status": "SUCCESS", "ip": ip}
+    except Exception as e:
+        results["dns_xl"] = {"status": "FAILED", "error": str(e)}
+        
+    # Test HTTP for XL API
+    try:
+        res = requests.get(f"https://{target_host}/", timeout=5)
+        results["http_xl"] = {"status": "SUCCESS", "code": res.status_code}
+    except Exception as e:
+        results["http_xl"] = {"status": "FAILED", "error": str(e)}
+        
+    # Get Current IP
+    try:
+        ip_res = requests.get("https://api.ipify.org?format=json", timeout=5)
+        results["server_ip"] = ip_res.json()["ip"]
+    except:
+        results["server_ip"] = "unknown"
+        
+    return results
+
 @app.get("/api/profile")
 def get_active_profile():
     active_user = AuthInstance.get_active_user()
