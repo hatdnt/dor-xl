@@ -14,6 +14,9 @@ from app.client.engsel import get_balance, get_tiering_info, get_profile, get_fa
 from app.client.ciam import get_otp, submit_otp, get_new_token
 from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.service.bookmark import BookmarkInstance
+from app.service.autobuy import AutoBuyInstance
+import asyncio
+import time
 
 app = FastAPI(title="MYnyak Engsel Sunset API")
 
@@ -384,6 +387,57 @@ def update_family_bookmarks(payload: dict = Body(...)):
         BookmarkInstance.update_family_bookmark(code, name)
         
     return {"status": "SUCCESS", "data": BookmarkInstance.get_family_bookmarks()}
+
+@app.get("/api/autobuy/configs")
+def get_autobuy_configs():
+    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
+
+@app.post("/api/autobuy/configs")
+def update_autobuy_config(config: dict = Body(...)):
+    AutoBuyInstance.update_config(config)
+    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
+
+@app.post("/api/autobuy/interval")
+def set_autobuy_interval(data: dict = Body(...)):
+    minutes = data.get("minutes", 5)
+    AutoBuyInstance.set_interval(minutes)
+    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
+
+@app.delete("/api/autobuy/configs/{config_id}")
+def delete_autobuy_config(config_id: str):
+    AutoBuyInstance.delete_config(config_id)
+    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
+
+@app.delete("/api/autobuy/logs")
+def clear_autobuy_logs():
+    return {"status": "SUCCESS", "data": AutoBuyInstance.clear_logs_and_get_data()}
+
+@app.post("/api/autobuy/trigger")
+async def trigger_autobuy():
+    res = await AutoBuyInstance.run_check()
+    return res
+
+async def autobuy_task():
+    print("[Task] AutoBuy background process started.")
+    while True:
+        try:
+            # Re-fetch latest interval from instance (it might have changed)
+            wait_min = AutoBuyInstance.interval
+            now = datetime.now().strftime("%H:%M:%S")
+            print(f"[{now}][Task] Running AutoBuy check... (Next in {wait_min}m)")
+            await AutoBuyInstance.run_check()
+        except Exception as e:
+            print(f"[AutoBuy Task Error] {e}")
+            try:
+                AutoBuyInstance.log_event("ERROR", f"Task Error: {str(e)}")
+            except: pass
+        
+        await asyncio.sleep(AutoBuyInstance.interval * 60)
+
+@app.on_event("startup")
+async def startup_event():
+    # Start background task
+    asyncio.create_task(autobuy_task())
 
 if __name__ == "__main__":
     import uvicorn
