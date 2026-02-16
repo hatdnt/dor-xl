@@ -388,8 +388,12 @@ def update_family_bookmarks(payload: dict = Body(...)):
         
     return {"status": "SUCCESS", "data": BookmarkInstance.get_family_bookmarks()}
 
+from fastapi import Response
+
 @app.get("/api/autobuy/configs")
-def get_autobuy_configs():
+def get_autobuy_configs(response: Response):
+    response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response.headers["Pragma"] = "no-cache"
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
 @app.post("/api/autobuy/configs")

@@ -46,8 +46,8 @@ export default function PurchasePage() {
                     } catch (e) { }
                 }
             });
-        // Fetch AutoBuy data
-        fetch("/api/autobuy/configs")
+        // Fetch AutoBuy data with cache-busting
+        fetch(`/api/autobuy/configs?t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data.status === "SUCCESS") {
@@ -191,7 +191,7 @@ export default function PurchasePage() {
     };
 
     const refreshAutoBuyData = () => {
-        fetch("/api/autobuy/configs")
+        fetch(`/api/autobuy/configs?t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (data.status === "SUCCESS") setAutoBuyData(data.data);
