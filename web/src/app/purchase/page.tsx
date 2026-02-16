@@ -9,11 +9,32 @@ export default function PurchasePage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
 
+    const [history, setHistory] = useState<{ code: string, name: string }[]>([]);
+
     useEffect(() => {
         const savedCode = localStorage.getItem("last_family_code");
         if (savedCode) {
             setFamilyCode(savedCode);
         }
+
+        // Fetch from server (Redis)
+        fetch("/api/bookmarks/family")
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    setHistory(data);
+                    localStorage.setItem("family_code_bookmarks", JSON.stringify(data));
+                }
+            })
+            .catch(err => {
+                console.error("Failed to fetch bookmarks from server", err);
+                const savedHistory = localStorage.getItem("family_code_bookmarks");
+                if (savedHistory) {
+                    try {
+                        setHistory(JSON.parse(savedHistory));
+                    } catch (e) { }
+                }
+            });
     }, []);
 
     // For detail view
@@ -32,18 +53,22 @@ export default function PurchasePage() {
         { id: 'wallet_gopay', name: 'GoPay', icon: '🛵' },
     ];
 
-    const handleFetchFamily = () => {
-        if (!familyCode) return;
+    const handleFetchFamily = (codeToFetch?: string) => {
+        const targetCode = codeToFetch || familyCode;
+        if (!targetCode) return;
+
+        if (codeToFetch) setFamilyCode(codeToFetch);
+
         setLoading(true);
         setError("");
         setVariants([]);
         setPurchaseRes(null);
-        fetch(`/api/packages/family/${familyCode}`)
+        fetch(`/api/packages/family/${targetCode}`)
             .then(res => res.json())
             .then(data => {
                 if (data.status === "SUCCESS") {
                     setVariants(data.data.package_variants || []);
-                    localStorage.setItem("last_family_code", familyCode);
+                    localStorage.setItem("last_family_code", targetCode);
                 } else {
                     setError(data.detail || data.message || "Gagal mengambil data family");
                 }
@@ -54,6 +79,46 @@ export default function PurchasePage() {
                 setError("Terjadi kesalahan koneksi");
                 setLoading(false);
             });
+    };
+
+    const removeHistory = (e: React.MouseEvent, codeToRemove: string) => {
+        e.stopPropagation();
+        if (!confirm("Hapus bookmark ini?")) return;
+
+        const newHistory = history.filter(item => item.code !== codeToRemove);
+        setHistory(newHistory);
+        localStorage.setItem("family_code_bookmarks", JSON.stringify(newHistory));
+
+        // Sync to Redis
+        fetch("/api/bookmarks/family", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code: codeToRemove, action: "delete" })
+        });
+    };
+
+    const addOrEditBookmark = (code: string, currentName?: string) => {
+        const alias = prompt("Masukkan nama untuk bookmark ini:", currentName || "") || "";
+        if (!alias && !currentName) return;
+
+        const name = alias || currentName || code;
+
+        const exists = history.find(item => item.code === code);
+        let updated;
+        if (exists) {
+            updated = history.map(item => item.code === code ? { ...item, name } : item);
+        } else {
+            updated = [{ code, name }, ...history].slice(0, 30);
+        }
+        setHistory(updated);
+        localStorage.setItem("family_code_bookmarks", JSON.stringify(updated));
+
+        // Sync to Redis
+        fetch("/api/bookmarks/family", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ code, name, action: "update" })
+        });
     };
 
     const fetchDetail = (variantCode: string, optionOrder: number) => {
@@ -230,12 +295,82 @@ export default function PurchasePage() {
                             outline: 'none'
                         }}
                     />
-                    <button className="btn-primary" onClick={handleFetchFamily} disabled={loading}>
+                    <button className="btn-primary" onClick={() => handleFetchFamily()} disabled={loading}>
                         {loading ? "..." : "Cari"}
                     </button>
+                    {familyCode && (
+                        <button
+                            className="glass-card"
+                            style={{ padding: '0 12px', borderRadius: '12px', border: '1px solid var(--accent)', color: 'var(--accent)', cursor: 'pointer' }}
+                            onClick={() => addOrEditBookmark(familyCode)}
+                            title="Simpan ke Bookmark"
+                        >
+                            ★
+                        </button>
+                    )}
                 </div>
                 {error && <p style={{ color: '#ff4444', fontSize: '0.8rem', marginTop: '10px' }}>{error}</p>}
             </div>
+
+            {history.length > 0 && (
+                <div style={{ marginBottom: '32px' }}>
+                    <div className="label" style={{ marginLeft: '8px', marginBottom: '12px', fontSize: '0.85rem' }}>Bookmark Tersimpan</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))', gap: '12px' }}>
+                        {history.map((item, i) => (
+                            <div
+                                key={i}
+                                className="glass-card animate-fade"
+                                style={{
+                                    padding: '12px',
+                                    cursor: 'pointer',
+                                    position: 'relative',
+                                    animationDelay: `${i * 0.05}s`,
+                                    border: familyCode === item.code ? '1px solid var(--accent)' : '1px solid var(--glass-border)'
+                                }}
+                                onClick={() => handleFetchFamily(item.code)}
+                            >
+                                <div style={{ position: 'absolute', top: '4px', right: '4px', display: 'flex', gap: '4px', zIndex: 10 }}>
+                                    <button
+                                        onClick={(e) => { e.stopPropagation(); addOrEditBookmark(item.code, item.name); }}
+                                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '0.7rem' }}
+                                        title="Edit Nama"
+                                    >
+                                        ✏️
+                                    </button>
+                                    <button
+                                        onClick={(e) => removeHistory(e, item.code)}
+                                        style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '0.9rem' }}
+                                        title="Hapus"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+                                <div style={{
+                                    fontSize: '0.85rem',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    paddingRight: '30px'
+                                }}>
+                                    {item.name}
+                                </div>
+                                <div style={{
+                                    fontSize: '0.65rem',
+                                    color: 'rgba(255,255,255,0.3)',
+                                    fontFamily: 'monospace',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap'
+                                }}>
+                                    {item.code.substring(0, 8)}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 {variants.map((variant, vIdx) => (

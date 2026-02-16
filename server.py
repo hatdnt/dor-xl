@@ -13,6 +13,7 @@ from app.service.auth import AuthInstance
 from app.client.engsel import get_balance, get_tiering_info, get_profile, get_families
 from app.client.ciam import get_otp, submit_otp, get_new_token
 from app.menus.package import fetch_my_packages, get_packages_by_family
+from app.service.bookmark import BookmarkInstance
 
 app = FastAPI(title="MYnyak Engsel Sunset API")
 
@@ -359,6 +360,30 @@ def purchase_package(payload: dict = Body(...)):
     except Exception as e:
         print(f"[Purchase Error] {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/api/bookmarks/family")
+def get_family_bookmarks():
+    return BookmarkInstance.get_family_bookmarks()
+
+@app.post("/api/bookmarks/family")
+def update_family_bookmarks(payload: dict = Body(...)):
+    code = payload.get("code")
+    name = payload.get("name")
+    action = payload.get("action", "update") # update or delete
+    
+    if not code:
+        raise HTTPException(status_code=400, detail="Code is required")
+        
+    if action == "delete":
+        bookmarks = BookmarkInstance.get_family_bookmarks()
+        new_bookmarks = [b for b in bookmarks if b["code"] != code]
+        BookmarkInstance.set_family_bookmarks(new_bookmarks)
+    else:
+        if not name:
+            name = code # Fallback
+        BookmarkInstance.update_family_bookmark(code, name)
+        
+    return {"status": "SUCCESS", "data": BookmarkInstance.get_family_bookmarks()}
 
 if __name__ == "__main__":
     import uvicorn
