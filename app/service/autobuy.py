@@ -51,8 +51,11 @@ class AutoBuy:
                 self.kv_client.set("autobuy_configs", json.dumps(self.configs))
                 self.kv_client.set("autobuy_interval", str(self.interval))
                 self.kv_client.set("autobuy_logs", json.dumps(self.logs))
+                return True
             except Exception as e:
                 print(f"AutoBuy: Save failed: {e}")
+                return False
+        return False
 
     def log_event(self, status: str, message: str):
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -70,6 +73,7 @@ class AutoBuy:
         return self.get_data()
 
     def get_data(self):
+        self.load_data() # Force load from KV to ensure consistency across instances
         return {
             "configs": self.configs,
             "interval": self.interval,
@@ -78,8 +82,9 @@ class AutoBuy:
 
     def set_interval(self, minutes: int):
         self.interval = max(1, minutes)
-        self.save_data()
+        success = self.save_data()
         self.log_event("CONFIG", f"Interval ditiapkan ke {self.interval} menit")
+        return success
 
     def update_config(self, config: Dict):
         # Config structure: { id, family_code, package_id, quota_keyword, enabled }
@@ -104,11 +109,11 @@ class AutoBuy:
             if not config_id:
                 config["id"] = str(int(time.time() * 1000))
             self.configs.append(config)
-        self.save_data()
+        return self.save_data()
 
     def delete_config(self, config_id: str):
         self.configs = [c for c in self.configs if c.get("id") != config_id]
-        self.save_data()
+        return self.save_data()
 
     async def run_check(self):
         """Main execution logic to be called by cron or background task"""

@@ -150,7 +150,11 @@ export default function PurchasePage() {
         })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "SUCCESS") setAutoBuyData(data.data);
+                if (data.status === "SUCCESS") {
+                    setAutoBuyData(data.data);
+                } else {
+                    alert(data.message || "Gagal memperbarui konfigurasi");
+                }
             });
     };
 
@@ -159,7 +163,11 @@ export default function PurchasePage() {
         fetch(`/api/autobuy/configs/${id}`, { method: "DELETE" })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "SUCCESS") setAutoBuyData(data.data);
+                if (data.status === "SUCCESS") {
+                    setAutoBuyData(data.data);
+                } else {
+                    alert(data.message || "Gagal menghapus konfigurasi");
+                }
             });
     };
 
@@ -174,7 +182,11 @@ export default function PurchasePage() {
         })
             .then(res => res.json())
             .then(data => {
-                if (data.status === "SUCCESS") setAutoBuyData(data.data);
+                if (data.status === "SUCCESS") {
+                    setAutoBuyData(data.data);
+                } else {
+                    alert(data.message || "Gagal memperbarui interval");
+                }
             });
     };
 

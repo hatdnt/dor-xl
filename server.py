@@ -394,18 +394,24 @@ def get_autobuy_configs():
 
 @app.post("/api/autobuy/configs")
 def update_autobuy_config(config: dict = Body(...)):
-    AutoBuyInstance.update_config(config)
+    success = AutoBuyInstance.update_config(config)
+    if not success:
+        return {"status": "ERROR", "message": "Gagal menyimpan ke Redis/KV"}
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
 @app.post("/api/autobuy/interval")
 def set_autobuy_interval(data: dict = Body(...)):
     minutes = data.get("minutes", 5)
-    AutoBuyInstance.set_interval(minutes)
+    success = AutoBuyInstance.set_interval(minutes)
+    if not success:
+        return {"status": "ERROR", "message": "Gagal menyimpan ke Redis/KV"}
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
 @app.delete("/api/autobuy/configs/{config_id}")
 def delete_autobuy_config(config_id: str):
-    AutoBuyInstance.delete_config(config_id)
+    success = AutoBuyInstance.delete_config(config_id)
+    if not success:
+        return {"status": "ERROR", "message": "Gagal menyimpan ke Redis/KV"}
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
 @app.delete("/api/autobuy/logs")
@@ -421,7 +427,9 @@ async def autobuy_task():
     print("[Task] AutoBuy background process started.")
     while True:
         try:
-            # Re-fetch latest interval from instance (it might have changed)
+            # Refresh data from KV to sync with other instances
+            AutoBuyInstance.load_data()
+            
             wait_min = AutoBuyInstance.interval
             now = datetime.now().strftime("%H:%M:%S")
             print(f"[{now}][Task] Running AutoBuy check... (Next in {wait_min}m)")
