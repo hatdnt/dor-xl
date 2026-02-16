@@ -1,6 +1,5 @@
-import os
-import json
 from typing import List, Dict
+from app.util import get_writable_path
 
 class Bookmark:
     _instance = None
@@ -14,19 +13,24 @@ class Bookmark:
     def __init__(self):
         if not self._initialized:
             self.packages: List[Dict] = []
-            self.filepath = "bookmark.json"
+            self.filepath = get_writable_path("bookmark.json")
 
             if os.path.exists(self.filepath):
                 self.load_bookmark()
             else:
-                self._save([])  # create empty file
+                try:
+                    self._save([])  # create empty file
+                except OSError: pass
 
             self._initialized = True
 
     def _save(self, data: List[Dict]):
         """Helper to write JSON safely."""
-        with open(self.filepath, "w", encoding="utf-8") as f:
-            json.dump(data, f, indent=4)
+        try:
+            with open(self.filepath, "w", encoding="utf-8") as f:
+                json.dump(data, f, indent=4)
+        except OSError:
+            print(f"Warning: Could not save bookmarks to {self.filepath}")
 
     def _ensure_schema(self):
         """Ensure all bookmarks have the latest schema fields."""

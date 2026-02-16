@@ -3,7 +3,7 @@ import json
 import time
 from app.client.ciam import get_new_token
 from app.client.engsel import get_profile
-from app.util import ensure_api_key
+from app.util import ensure_api_key, get_writable_path
 
 class Auth:
     _instance_ = None
@@ -45,12 +45,13 @@ class Auth:
         if not self._initialized_:
             self.api_key = ensure_api_key()
             
-            if os.path.exists("refresh-tokens.json"):
+            tokens_path = get_writable_path("refresh-tokens.json")
+            if os.path.exists(tokens_path):
                 self.load_tokens()
             else:
                 # Create empty file
                 try:
-                    with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+                    with open(tokens_path, "w", encoding="utf-8") as f:
                         json.dump([], f, indent=4)
                 except OSError: pass
 
@@ -61,7 +62,8 @@ class Auth:
             self._initialized_ = True
             
     def load_tokens(self):
-        with open("refresh-tokens.json", "r", encoding="utf-8") as f:
+        tokens_path = get_writable_path("refresh-tokens.json")
+        with open(tokens_path, "r", encoding="utf-8") as f:
             refresh_tokens = json.load(f)
             
             if len(refresh_tokens) !=  0:
@@ -103,7 +105,8 @@ class Auth:
         
         # Save to file
         try:
-            with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+            tokens_path = get_writable_path("refresh-tokens.json")
+            with open(tokens_path, "w", encoding="utf-8") as f:
                 json.dump(self.refresh_tokens, f, indent=4)
         except OSError: pass
         
@@ -197,26 +200,29 @@ class Auth:
     
     def write_tokens_to_file(self):
         try:
-            with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+            tokens_path = get_writable_path("refresh-tokens.json")
+            with open(tokens_path, "w", encoding="utf-8") as f:
                 json.dump(self.refresh_tokens, f, indent=4)
         except OSError:
             print("Warning: Could not save tokens due to read-only filesystem.")
     
     def write_active_number(self):
+        active_path = get_writable_path("active.number")
         if self.active_user:
             try:
-                with open("active.number", "w", encoding="utf-8") as f:
+                with open(active_path, "w", encoding="utf-8") as f:
                     f.write(str(self.active_user["number"]))
             except OSError: pass
         else:
-            if os.path.exists("active.number"):
+            if os.path.exists(active_path):
                 try:
-                    os.remove("active.number")
+                    os.remove(active_path)
                 except OSError: pass
     
     def load_active_number(self):
-        if os.path.exists("active.number"):
-            with open("active.number", "r", encoding="utf-8") as f:
+        active_path = get_writable_path("active.number")
+        if os.path.exists(active_path):
+            with open(active_path, "r", encoding="utf-8") as f:
                 number_str = f.read().strip()
                 if number_str.isdigit():
                     number = int(number_str)

@@ -1,5 +1,6 @@
 from app.client.engsel import get_package, send_api_request
 from app.menus.util import clear_screen, pause
+from app.util import get_writable_path
 import json
 from datetime import datetime
 from app.service.auth import AuthInstance
@@ -23,11 +24,14 @@ def enter_sentry_mode():
     print("Entering Sentry Mode...")
     print("Press Ctrl+C or type 'q' + Enter to exit.")
     
-    if not os.path.exists("sentry"):
-        os.makedirs("sentry")
+    sentry_dir = get_writable_path("sentry")
+    if not os.path.exists(sentry_dir):
+        try:
+            os.makedirs(sentry_dir)
+        except OSError: pass
 
     file_name = os.path.join(
-        "sentry",
+        sentry_dir,
         f"sentry_log_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jsonl"
     )
 
