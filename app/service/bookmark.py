@@ -1,5 +1,7 @@
 from typing import List, Dict
 from app.util import get_writable_path
+import os
+import json
 
 class Bookmark:
     _instance = None
@@ -27,10 +29,12 @@ class Bookmark:
     def _save(self, data: List[Dict]):
         """Helper to write JSON safely."""
         try:
+            # Ensure the directory exists if it's in /tmp
+            os.makedirs(os.path.dirname(self.filepath), exist_ok=True)
             with open(self.filepath, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4)
-        except OSError:
-            print(f"Warning: Could not save bookmarks to {self.filepath}")
+        except OSError as e:
+            print(f"Warning: Could not save bookmarks to {self.filepath}: {e}")
 
     def _ensure_schema(self):
         """Ensure all bookmarks have the latest schema fields."""

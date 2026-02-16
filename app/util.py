@@ -1,12 +1,13 @@
 import os
 
-IS_VERCEL = os.environ.get("VERCEL") == "1"
+IS_VERCEL = os.environ.get("VERCEL") == "1" or os.environ.get("NOW_REGION") is not None
 
 def get_writable_path(path: str) -> str:
     if not IS_VERCEL:
         return path
     
     # On Vercel, everything must be in /tmp
+    # Ensure the path is just a filename if it's not already absolute
     filename = os.path.basename(path)
     return os.path.join("/tmp", filename)
 

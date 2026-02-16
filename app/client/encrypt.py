@@ -80,6 +80,7 @@ def load_ax_fp() -> str:
     
     new_fp = ax_fingerprint(dev, AX_FP_KEY)
     try:
+        os.makedirs(os.path.dirname(fp_path), exist_ok=True)
         with open(fp_path, "w", encoding="utf-8") as f:
             f.write(new_fp)
     except OSError as e:
