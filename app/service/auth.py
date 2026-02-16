@@ -48,8 +48,8 @@ class Auth:
         if not self._initialized_:
             self.api_key = ensure_api_key()
             
-            # Setup Vercel KV if available
-            kv_url = os.environ.get("KV_URL")
+            # Setup Vercel KV if available (checks both KV_URL and REDIS_URL)
+            kv_url = os.environ.get("KV_URL") or os.environ.get("REDIS_URL")
             if kv_url:
                 try:
                     self.kv_client = redis.from_url(kv_url, decode_responses=True)
