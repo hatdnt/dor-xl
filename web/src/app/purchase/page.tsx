@@ -207,6 +207,20 @@ export default function PurchasePage() {
             });
     };
 
+    const handleResetAutoBuy = () => {
+        if (!confirm("⚠️ PERINGATAN: Ini akan menghapus SEMUA konfigurasi, log, dan meriset interval ke 5 menit. Lanjutkan?")) return;
+        fetch("/api/autobuy/reset", { method: "POST" })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "SUCCESS") {
+                    setAutoBuyData(data.data);
+                    alert("Seluruh data Auto Buy berhasil diriset.");
+                } else {
+                    alert(data.message || "Gagal meriset data");
+                }
+            });
+    };
+
     const handleAddAutoBuy = () => {
         setShowAutoBuyModal(true);
         setTempAutoBuy({
@@ -652,6 +666,7 @@ export default function PurchasePage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div className="label" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>🕒 Activity Logs (Auto Buy)</div>
                         <div style={{ display: 'flex', gap: '15px' }}>
+                            <button onClick={handleResetAutoBuy} style={{ background: 'none', border: 'none', color: '#ff8800', cursor: 'pointer', fontSize: '0.7rem' }}>⚠️ Reset All</button>
                             <button onClick={handleClearLogs} style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '0.7rem' }}>🗑️ Clear</button>
                             <button onClick={refreshAutoBuyData} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.7rem' }}>🔄 Refresh</button>
                         </div>

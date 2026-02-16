@@ -72,6 +72,22 @@ class AutoBuy:
         self.save_data()
         return self.get_data()
 
+    def reset_all(self):
+        """Reset everything: configs, interval, and logs"""
+        self.configs = []
+        self.logs = []
+        self.interval = 5
+        if self.kv_client:
+            try:
+                self.kv_client.delete("autobuy_configs")
+                self.kv_client.delete("autobuy_interval")
+                self.kv_client.delete("autobuy_logs")
+                return True
+            except Exception as e:
+                print(f"AutoBuy: Reset failed: {e}")
+                return False
+        return True
+
     def get_data(self):
         self.load_data() # Force load from KV to ensure consistency across instances
         return {

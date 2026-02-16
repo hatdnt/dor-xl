@@ -418,6 +418,13 @@ def delete_autobuy_config(config_id: str):
 def clear_autobuy_logs():
     return {"status": "SUCCESS", "data": AutoBuyInstance.clear_logs_and_get_data()}
 
+@app.post("/api/autobuy/reset")
+def reset_autobuy():
+    success = AutoBuyInstance.reset_all()
+    if not success:
+        return {"status": "ERROR", "message": "Gagal meriset data di Redis/KV"}
+    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
+
 @app.post("/api/autobuy/trigger")
 async def trigger_autobuy():
     res = await AutoBuyInstance.run_check()
