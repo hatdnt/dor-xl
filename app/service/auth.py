@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import redis
 from app.client.ciam import get_new_token
 from app.client.engsel import get_profile
 from app.util import ensure_api_key, get_writable_path
@@ -41,24 +42,37 @@ class Auth:
             cls._instance_ = super().__new__(cls)
         return cls._instance_
     
+    kv_client = None
+
     def __init__(self):
         if not self._initialized_:
             self.api_key = ensure_api_key()
             
-            tokens_path = get_writable_path("refresh-tokens.json")
-            if os.path.exists(tokens_path):
-                self.load_tokens()
-            else:
-                # Create empty file
+            # Setup Vercel KV if available
+            kv_url = os.environ.get("KV_URL")
+            if kv_url:
                 try:
-                    with open(tokens_path, "w", encoding="utf-8") as f:
-                        json.dump([], f, indent=4)
-                except OSError: pass
+                    self.kv_client = redis.from_url(kv_url, decode_responses=True)
+                    print("Vercel KV connected.")
+                except Exception as e:
+                    print(f"Failed to connect to Vercel KV: {e}")
 
-            # Select active user from file if available
-            self.load_active_number()
+            if self.kv_client:
+                self.load_tokens_from_kv()
+                self.load_active_number_from_kv()
+            else:
+                tokens_path = get_writable_path("refresh-tokens.json")
+                if os.path.exists(tokens_path):
+                    self.load_tokens()
+                else:
+                    # Create empty file
+                    try:
+                        with open(tokens_path, "w", encoding="utf-8") as f:
+                            json.dump([], f, indent=4)
+                    except OSError: pass
+                self.load_active_number()
+
             self.last_refresh_time = int(time.time())
-
             self._initialized_ = True
             
     def load_tokens(self):
@@ -198,7 +212,39 @@ class Auth:
         active_user = self.get_active_user()
         return active_user["tokens"] if active_user else None
     
+    def load_active_number(self):
+        active_path = get_writable_path("active.number")
+        if os.path.exists(active_path):
+            with open(active_path, "r", encoding="utf-8") as f:
+                number_str = f.read().strip()
+                if number_str.isdigit():
+                    number = int(number_str)
+                    self.set_active_user(number)
+
+    def load_tokens_from_kv(self):
+        try:
+            tokens_data = self.kv_client.get("refresh-tokens")
+            if tokens_data:
+                self.refresh_tokens = json.loads(tokens_data)
+        except Exception as e:
+            print(f"Error loading tokens from KV: {e}")
+
+    def load_active_number_from_kv(self):
+        try:
+            number_str = self.kv_client.get("active-number")
+            if number_str and number_str.isdigit():
+                self.set_active_user(int(number_str))
+        except Exception as e:
+            print(f"Error loading active number from KV: {e}")
+
     def write_tokens_to_file(self):
+        if self.kv_client:
+            try:
+                self.kv_client.set("refresh-tokens", json.dumps(self.refresh_tokens))
+            except Exception as e:
+                print(f"Error saving tokens to KV: {e}")
+            return
+
         try:
             tokens_path = get_writable_path("refresh-tokens.json")
             with open(tokens_path, "w", encoding="utf-8") as f:
@@ -207,6 +253,18 @@ class Auth:
             print("Warning: Could not save tokens due to read-only filesystem.")
     
     def write_active_number(self):
+        if self.kv_client:
+            if self.active_user:
+                try:
+                    self.kv_client.set("active-number", str(self.active_user["number"]))
+                except Exception as e:
+                    print(f"Error saving active number to KV: {e}")
+            else:
+                try:
+                    self.kv_client.delete("active-number")
+                except Exception as e: pass
+            return
+
         active_path = get_writable_path("active.number")
         if self.active_user:
             try:
@@ -218,14 +276,5 @@ class Auth:
                 try:
                     os.remove(active_path)
                 except OSError: pass
-    
-    def load_active_number(self):
-        active_path = get_writable_path("active.number")
-        if os.path.exists(active_path):
-            with open(active_path, "r", encoding="utf-8") as f:
-                number_str = f.read().strip()
-                if number_str.isdigit():
-                    number = int(number_str)
-                    self.set_active_user(number)
 
 AuthInstance = Auth()
