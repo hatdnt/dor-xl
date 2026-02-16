@@ -4,6 +4,7 @@ import requests
 import base64
 import json
 import time
+import redis
 
 from random import randint
 from datetime import datetime, timezone, timedelta
@@ -58,6 +59,16 @@ def ax_fingerprint(dev: DeviceInfo, secret_key_32hex_ascii: str) -> str:
 from app.util import get_writable_path
 
 def load_ax_fp() -> str:
+    kv_url = os.environ.get("KV_URL")
+    kv_client = None
+    if kv_url:
+        try:
+            kv_client = redis.from_url(kv_url, decode_responses=True)
+            cached_fp = kv_client.get("ax-fingerprint")
+            if cached_fp:
+                return cached_fp
+        except: pass
+
     fp_path = get_writable_path("ax.fp")
     if os.path.exists(fp_path):
         with open(fp_path, "r", encoding="utf-8") as f:
@@ -65,7 +76,7 @@ def load_ax_fp() -> str:
             if content:
                 return content
     
-    # Generate new if not found/empty
+    # Generate new if not found
     dev = DeviceInfo(
         manufacturer="samsung" + str(randint(1000, 9999)),
         model="SM-N93" + str(randint(1000, 9999)),
@@ -79,12 +90,21 @@ def load_ax_fp() -> str:
     )
     
     new_fp = ax_fingerprint(dev, AX_FP_KEY)
+    
+    # Save to KV if available
+    if kv_client:
+        try:
+            kv_client.set("ax-fingerprint", new_fp)
+        except: pass
+
+    # Also save to /tmp as local cache
     try:
         os.makedirs(os.path.dirname(fp_path), exist_ok=True)
         with open(fp_path, "w", encoding="utf-8") as f:
             f.write(new_fp)
     except OSError as e:
-        print(f"Warning: Could not save fingerprints due to read-only filesystem ({e}). Persistence disabled.")
+        print(f"Warning: Could not save fingerprints to /tmp ({e})")
+        
     return new_fp
     
 
