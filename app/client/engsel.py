@@ -310,14 +310,15 @@ def get_package_details(
     package_variants = family_data["package_variants"]
     option_code = None
     for variant in package_variants:
-        if variant["package_variant_code"] == variant_code:
+        if variant_code == "" or variant["package_variant_code"] == variant_code:
             selected_variant = variant
-            package_options = selected_variant["package_options"]
+            package_options = selected_variant.get("package_options", [])
             for option in package_options:
                 if option["order"] == option_order:
                     selected_option = option
                     option_code = selected_option["package_option_code"]
                     break
+            if option_code: break
 
     if option_code is None:
         print("Gagal menemukan opsi paket yang sesuai.")

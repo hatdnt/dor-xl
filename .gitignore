@@ -1,13 +1,27 @@
-.vscode
-env
-.env
-tokens*
+# Python
+venv/
+env/
 __pycache__/
-.vscode/
-*.ipynb
-play*
-pg*
-refresh-tokens*
+*.pyc
+.env
+
+# Next.js / Node
+node_modules/
+.next/
+out/
+build/
+.DS_Store
+
+# Project Specific Data (Private/Sensitive)
+refresh-tokens.json
+tokens*
+active.number
 ax.fp
 bookmark.json
-active.number
+play*
+pg*
+*.ipynb
+
+# IDEs
+.vscode/
+.idea/
