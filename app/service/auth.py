@@ -49,8 +49,10 @@ class Auth:
                 self.load_tokens()
             else:
                 # Create empty file
-                with open("refresh-tokens.json", "w", encoding="utf-8") as f:
-                    json.dump([], f, indent=4)
+                try:
+                    with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+                        json.dump([], f, indent=4)
+                except OSError: pass
 
             # Select active user from file if available
             self.load_active_number()
@@ -100,8 +102,10 @@ class Auth:
         self.refresh_tokens = [rt for rt in self.refresh_tokens if rt["number"] != number]
         
         # Save to file
-        with open("refresh-tokens.json", "w", encoding="utf-8") as f:
-            json.dump(self.refresh_tokens, f, indent=4)
+        try:
+            with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+                json.dump(self.refresh_tokens, f, indent=4)
+        except OSError: pass
         
         # If the removed user was the active user, select a new active user if available
         if self.active_user and self.active_user["number"] == number:
@@ -192,16 +196,23 @@ class Auth:
         return active_user["tokens"] if active_user else None
     
     def write_tokens_to_file(self):
-        with open("refresh-tokens.json", "w", encoding="utf-8") as f:
-            json.dump(self.refresh_tokens, f, indent=4)
+        try:
+            with open("refresh-tokens.json", "w", encoding="utf-8") as f:
+                json.dump(self.refresh_tokens, f, indent=4)
+        except OSError:
+            print("Warning: Could not save tokens due to read-only filesystem.")
     
     def write_active_number(self):
         if self.active_user:
-            with open("active.number", "w", encoding="utf-8") as f:
-                f.write(str(self.active_user["number"]))
+            try:
+                with open("active.number", "w", encoding="utf-8") as f:
+                    f.write(str(self.active_user["number"]))
+            except OSError: pass
         else:
             if os.path.exists("active.number"):
-                os.remove("active.number")
+                try:
+                    os.remove("active.number")
+                except OSError: pass
     
     def load_active_number(self):
         if os.path.exists("active.number"):

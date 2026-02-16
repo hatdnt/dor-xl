@@ -77,8 +77,11 @@ def load_ax_fp() -> str:
     )
     
     new_fp = ax_fingerprint(dev, AX_FP_KEY)
-    with open(fp_path, "w", encoding="utf-8") as f:
-        f.write(new_fp)
+    try:
+        with open(fp_path, "w", encoding="utf-8") as f:
+            f.write(new_fp)
+    except OSError as e:
+        print(f"Warning: Could not save fingerprints due to read-only filesystem ({e}). Persistence disabled.")
     return new_fp
     
 
