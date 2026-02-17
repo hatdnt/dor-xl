@@ -403,13 +403,6 @@ def update_autobuy_config(config: dict = Body(...)):
         return {"status": "ERROR", "message": "Gagal menyimpan ke Redis/KV"}
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
-@app.post("/api/autobuy/interval")
-def set_autobuy_interval(data: dict = Body(...)):
-    minutes = data.get("minutes", 5)
-    success = AutoBuyInstance.set_interval(minutes)
-    if not success:
-        return {"status": "ERROR", "message": "Gagal menyimpan ke Redis/KV"}
-    return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
 @app.delete("/api/autobuy/configs/{config_id}")
 def delete_autobuy_config(config_id: str):
@@ -429,34 +422,15 @@ def reset_autobuy():
         return {"status": "ERROR", "message": "Gagal meriset data di Redis/KV"}
     return {"status": "SUCCESS", "data": AutoBuyInstance.get_data()}
 
-@app.post("/api/autobuy/trigger")
+@app.get("/api/autobuy/trigger")
 async def trigger_autobuy():
     res = await AutoBuyInstance.run_check()
     return res
 
-async def autobuy_task():
-    print("[Task] AutoBuy background process started.")
-    while True:
-        try:
-            # Refresh data from KV to sync with other instances
-            AutoBuyInstance.load_data()
-            
-            wait_min = AutoBuyInstance.interval
-            now = datetime.now().strftime("%H:%M:%S")
-            print(f"[{now}][Task] Running AutoBuy check... (Next in {wait_min}m)")
-            await AutoBuyInstance.run_check()
-        except Exception as e:
-            print(f"[AutoBuy Task Error] {e}")
-            try:
-                AutoBuyInstance.log_event("ERROR", f"Task Error: {str(e)}")
-            except: pass
-        
-        await asyncio.sleep(AutoBuyInstance.interval * 60)
-
 @app.on_event("startup")
 async def startup_event():
-    # Start background task
-    asyncio.create_task(autobuy_task())
+    # Background task is now handled by Vercel Cron
+    pass
 
 if __name__ == "__main__":
     import uvicorn

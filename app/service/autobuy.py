@@ -23,7 +23,6 @@ class AutoBuy:
         if not self._initialized:
             self.configs: List[Dict] = []
             self.logs: List[Dict] = []
-            self.interval = 5
             self.kv_client = AuthInstance.kv_client
             self.load_data()
             self._initialized = True
@@ -35,10 +34,6 @@ class AutoBuy:
                 c_data = self.kv_client.get("autobuy_configs")
                 if c_data: self.configs = json.loads(c_data)
                 
-                # Load Interval
-                i_data = self.kv_client.get("autobuy_interval")
-                if i_data: self.interval = int(i_data)
-                
                 # Load Logs
                 l_data = self.kv_client.get("autobuy_logs")
                 if l_data: self.logs = json.loads(l_data)
@@ -49,7 +44,6 @@ class AutoBuy:
         if self.kv_client:
             try:
                 self.kv_client.set("autobuy_configs", json.dumps(self.configs))
-                self.kv_client.set("autobuy_interval", str(self.interval))
                 self.kv_client.set("autobuy_logs", json.dumps(self.logs))
                 return True
             except Exception as e:
@@ -73,14 +67,12 @@ class AutoBuy:
         return self.get_data()
 
     def reset_all(self):
-        """Reset everything: configs, interval, and logs"""
+        """Reset everything: configs and logs"""
         self.configs = []
         self.logs = []
-        self.interval = 5
         if self.kv_client:
             try:
                 self.kv_client.delete("autobuy_configs")
-                self.kv_client.delete("autobuy_interval")
                 self.kv_client.delete("autobuy_logs")
                 return True
             except Exception as e:
@@ -92,15 +84,9 @@ class AutoBuy:
         self.load_data() # Force load from KV to ensure consistency across instances
         return {
             "configs": self.configs,
-            "interval": self.interval,
             "logs": self.logs
         }
 
-    def set_interval(self, minutes: int):
-        self.interval = max(1, minutes)
-        success = self.save_data()
-        self.log_event("CONFIG", f"Interval ditiapkan ke {self.interval} menit")
-        return success
 
     def update_config(self, config: Dict):
         # Config structure: { id, family_code, package_id, quota_keyword, enabled }

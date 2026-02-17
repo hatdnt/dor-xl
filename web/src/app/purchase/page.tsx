@@ -10,7 +10,7 @@ export default function PurchasePage() {
     const [error, setError] = useState("");
 
     const [history, setHistory] = useState<{ code: string, name: string }[]>([]);
-    const [autoBuyData, setAutoBuyData] = useState<any>({ configs: [], interval: 5, logs: [] });
+    const [autoBuyData, setAutoBuyData] = useState<any>({ configs: [], logs: [] });
     const [showAutoBuyModal, setShowAutoBuyModal] = useState(false);
     const [tempAutoBuy, setTempAutoBuy] = useState<any>({
         familyCode: '',
@@ -171,24 +171,6 @@ export default function PurchasePage() {
             });
     };
 
-    const handleUpdateInterval = () => {
-        const currentVal = autoBuyData?.interval || 5;
-        const min = prompt("Masukkan interval cek (menit):", currentVal.toString());
-        if (!min) return;
-        fetch("/api/autobuy/interval", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ minutes: parseInt(min) })
-        })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === "SUCCESS") {
-                    setAutoBuyData(data.data);
-                } else {
-                    alert(data.message || "Gagal memperbarui interval");
-                }
-            });
-    };
 
     const refreshAutoBuyData = () => {
         fetch(`/api/autobuy/configs?t=${Date.now()}`, { cache: 'no-store' })
@@ -208,7 +190,7 @@ export default function PurchasePage() {
     };
 
     const handleResetAutoBuy = () => {
-        if (!confirm("⚠️ PERINGATAN: Ini akan menghapus SEMUA konfigurasi, log, dan meriset interval ke 5 menit. Lanjutkan?")) return;
+        if (!confirm("⚠️ PERINGATAN: Ini akan menghapus SEMUA konfigurasi dan log. Lanjutkan?")) return;
         fetch("/api/autobuy/reset", { method: "POST" })
             .then(res => res.json())
             .then(data => {
@@ -601,12 +583,6 @@ export default function PurchasePage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <h2 className="gradient-text" style={{ fontSize: '1.2rem' }}>⚙️ Auto Buy</h2>
-                        <span
-                            onClick={handleUpdateInterval}
-                            style={{ fontSize: '0.7rem', color: 'var(--accent)', cursor: 'pointer', background: 'rgba(255,255,255,0.05)', padding: '2px 8px', borderRadius: '10px' }}
-                        >
-                            ⏱️ {autoBuyData.interval}m
-                        </span>
                     </div>
                     <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }} onClick={handleAddAutoBuy}>+ Tambah</button>
                 </div>
@@ -693,7 +669,7 @@ export default function PurchasePage() {
                 </div>
 
                 <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', marginTop: '24px', textAlign: 'center' }}>
-                    Sistem akan mengecek kuota setiap {autoBuyData.interval} menit. Tersinkronisasi dengan Redis.
+                    Sistem mengecek kuota secara berkala via Vercel Cron. Tersinkronisasi dengan Redis.
                 </p>
             </div>
             {showAutoBuyModal && (
