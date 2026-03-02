@@ -39,37 +39,85 @@ export default function PackagesPage() {
                 <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Paket Saya</h1>
             </header>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                 {packages.length > 0 ? (
                     packages.map((pkg, idx) => (
-                        <div key={idx} className="glass-card animate-fade" style={{ animationDelay: `${idx * 0.1}s`, marginBottom: '10px' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '12px' }}>
-                                <div>
-                                    <div className="value" style={{ fontSize: '1rem', color: 'white' }}>{pkg.name}</div>
-                                    <div className="label" style={{ fontSize: '0.75rem' }}>{pkg.group_name}</div>
+                        <div key={idx} className="glass-card animate-fade" style={{ animationDelay: `${idx * 0.1}s`, padding: '20px' }}>
+                            {/* Header: Nama Paket & Status */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                                <div style={{ flex: 1 }}>
+                                    <div className="gradient-text" style={{ fontSize: '1.2rem', marginBottom: '4px', display: 'block' }}>
+                                        {pkg.name}
+                                    </div>
+                                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: '500' }}>
+                                        {pkg.group_name}
+                                    </div>
                                 </div>
-                                <div className="status-badge status-active">Aktif</div>
+                                <div className="status-badge status-active" style={{ fontSize: '0.65rem' }}>AKTIF</div>
                             </div>
 
-                            <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: '8px', padding: '10px' }}>
-                                {pkg.benefits?.map((benefit: any, bIdx: number) => (
-                                    <div key={bIdx} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', borderBottom: bIdx < pkg.benefits.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none', paddingBottom: '4px' }}>
-                                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)' }}>{benefit.name}</div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <div style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{benefit.remaining_str}</div>
-                                            <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>dari {benefit.total_str}</div>
+                            {/* Divider Tipis */}
+                            <div style={{ height: '1px', background: 'linear-gradient(90deg, var(--glass-border), transparent)', marginBottom: '20px' }}></div>
+
+                            {/* Benefit / Kuota List */}
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+                                {pkg.benefits?.map((benefit: any, bIdx: number) => {
+                                    const percentage = benefit.total > 0 ? (benefit.remaining / benefit.total) * 100 : 0;
+                                    return (
+                                        <div key={bIdx}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '6px' }}>
+                                                <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600' }}>
+                                                    {benefit.name}
+                                                </div>
+                                                <div style={{ textAlign: 'right' }}>
+                                                    <span style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{benefit.remaining_str}</span>
+                                                    <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/ {benefit.total_str}</span>
+                                                </div>
+                                            </div>
+                                            {/* Progress Bar Container */}
+                                            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
+                                                <div
+                                                    style={{
+                                                        width: `${percentage}%`,
+                                                        height: '100%',
+                                                        background: 'linear-gradient(90deg, var(--primary), var(--accent))',
+                                                        borderRadius: '10px',
+                                                        transition: 'width 1s ease-out'
+                                                    }}
+                                                />
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                                 {(!pkg.benefits || pkg.benefits.length === 0) && (
-                                    <div className="label" style={{ fontSize: '0.8rem', textAlign: 'center' }}>Tidak ada detail kuota</div>
+                                    <div className="label" style={{ fontSize: '0.8rem', textAlign: 'center', opacity: 0.5 }}>Tidak ada detail kuota</div>
                                 )}
                             </div>
+
+                            {/* Footer Area: Expiry Date */}
+                            {pkg.expired_at && (
+                                <div style={{
+                                    marginTop: '24px',
+                                    padding: '10px 14px',
+                                    background: 'rgba(255,204,0,0.05)',
+                                    borderRadius: '10px',
+                                    border: '1px solid rgba(255,204,0,0.1)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px'
+                                }}>
+                                    <div style={{ fontSize: '0.75rem', color: '#ffcc00', fontWeight: '600' }}>
+                                        Berakhir pada: <span style={{ color: 'white' }}>{new Date(pkg.expired_at * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))
                 ) : (
-                    <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
-                        <p>Tidak ada paket aktif yang ditemukan.</p>
+                    <div className="glass-card" style={{ textAlign: 'center', padding: '60px' }}>
+                        <div style={{ fontSize: '3rem', marginBottom: '20px' }}>📭</div>
+                        <p style={{ opacity: 0.6 }}>Tidak ada paket aktif yang ditemukan.</p>
+                        <Link href="/purchase" className="btn-primary" style={{ marginTop: '24px', display: 'inline-block', textDecoration: 'none' }}>Beli Paket Sekarang</Link>
                     </div>
                 )}
             </div>

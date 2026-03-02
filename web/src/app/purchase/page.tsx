@@ -410,13 +410,13 @@ export default function PurchasePage() {
                                 )}
                             </div>
 
-                            <div className="label" style={{ marginBottom: '12px' }}>Pilih Metode Pembayaran:</div>
+                            <div className="label" style={{ marginBottom: '12px', color: 'white' }}>Pilih Metode Pembayaran:</div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
                                 {purchaseMethods.map(m => (
                                     <button
                                         key={m.id}
                                         className="glass-card"
-                                        style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', border: '1px solid var(--glass-border)', borderRadius: '12px' }}
+                                        style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white' }}
                                         onClick={() => handlePurchase(m.id)}
                                         disabled={loading}
                                     >
@@ -464,7 +464,7 @@ export default function PurchasePage() {
 
             <div className="glass-card" style={{ marginBottom: '24px' }}>
                 <div className="label">Masukkan Family Code</div>
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
                     <input
                         type="text"
                         value={familyCode}
@@ -472,21 +472,38 @@ export default function PurchasePage() {
                         placeholder="7658c955-a0b9..."
                         style={{
                             flex: 1,
+                            minWidth: 0,
                             background: 'rgba(255,255,255,0.05)',
                             border: '1px solid var(--glass-border)',
                             borderRadius: '12px',
                             padding: '12px',
                             color: 'white',
-                            outline: 'none'
+                            outline: 'none',
+                            fontSize: '0.9rem'
                         }}
                     />
-                    <button className="btn-primary" onClick={() => handleFetchFamily()} disabled={loading}>
+                    <button
+                        className="btn-primary"
+                        style={{ padding: '0 16px', flexShrink: 0, fontSize: '0.8rem' }}
+                        onClick={() => handleFetchFamily()}
+                        disabled={loading}
+                    >
                         {loading ? "..." : "Cari"}
                     </button>
                     {familyCode && (
                         <button
                             className="glass-card"
-                            style={{ padding: '0 12px', borderRadius: '12px', border: '1px solid var(--accent)', color: 'var(--accent)', cursor: 'pointer' }}
+                            style={{
+                                padding: '0 12px',
+                                borderRadius: '12px',
+                                border: '1px solid var(--accent)',
+                                color: 'var(--accent)',
+                                cursor: 'pointer',
+                                flexShrink: 0,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
                             onClick={() => addOrEditBookmark(familyCode)}
                             title="Simpan ke Bookmark"
                         >
@@ -561,14 +578,14 @@ export default function PurchasePage() {
                 {variants.map((variant, vIdx) => (
                     <div key={vIdx}>
                         <div className="label" style={{ marginBottom: '12px', marginLeft: '8px', fontSize: '0.9rem', opacity: 0.8 }}>
-                            Variant: {variant.name}
+                            {vIdx + 1}. Variant: {variant.name}
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                             {variant.package_options?.map((pkg: any, idx: number) => (
                                 <div key={idx} className="glass-card animate-fade" style={{ animationDelay: `${idx * 0.05}s`, cursor: 'pointer' }} onClick={() => fetchDetail(variant.package_variant_code, pkg.order)}>
                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <div>
-                                            <div className="value" style={{ fontSize: '0.95rem' }}>{pkg.name}</div>
+                                            <div className="value" style={{ fontSize: '0.95rem' }}>{idx + 1}. {pkg.name}</div>
                                             <div className="label">Rp {pkg.price?.toLocaleString()} • {pkg.validity}</div>
                                         </div>
                                         <div style={{ color: 'var(--accent)', fontSize: '1.2rem' }}>›</div>
