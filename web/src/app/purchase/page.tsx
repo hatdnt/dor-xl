@@ -23,11 +23,6 @@ export default function PurchasePage() {
     });
 
     useEffect(() => {
-        const savedCode = localStorage.getItem("last_family_code");
-        if (savedCode) {
-            setFamilyCode(savedCode);
-        }
-
         // Fetch from server (Redis)
         fetch("/api/bookmarks/family")
             .then(res => res.json())
@@ -659,8 +654,7 @@ export default function PurchasePage() {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                         <div className="label" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>🕒 Activity Logs (Auto Buy)</div>
                         <div style={{ display: 'flex', gap: '15px' }}>
-                            <button onClick={handleResetAutoBuy} style={{ background: 'none', border: 'none', color: '#ff8800', cursor: 'pointer', fontSize: '0.7rem' }}>⚠️ Reset All</button>
-                            <button onClick={handleClearLogs} style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '0.7rem' }}>🗑️ Clear</button>
+                            <button onClick={handleResetAutoBuy} style={{ background: 'none', border: 'none', color: '#ff8800', cursor: 'pointer', fontSize: '0.7rem' }}>⚠️ Reset</button>
                             <button onClick={refreshAutoBuyData} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.7rem' }}>🔄 Refresh</button>
                         </div>
                     </div>

@@ -44,7 +44,14 @@ export default function PackagesPage() {
                     packages.map((pkg, idx) => (
                         <div key={idx} className="glass-card animate-fade" style={{ animationDelay: `${idx * 0.1}s`, padding: '20px' }}>
                             {/* Header: Nama Paket & Status */}
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', gap: '12px' }}>
+                                {pkg.icon && (
+                                    <img
+                                        src={pkg.icon}
+                                        alt=""
+                                        style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', background: 'rgba(255,255,255,0.05)', padding: '4px' }}
+                                    />
+                                )}
                                 <div style={{ flex: 1 }}>
                                     <div className="gradient-text" style={{ fontSize: '1.2rem', marginBottom: '4px', display: 'block' }}>
                                         {pkg.name}
@@ -65,26 +72,33 @@ export default function PackagesPage() {
                                     const percentage = benefit.total > 0 ? (benefit.remaining / benefit.total) * 100 : 0;
                                     return (
                                         <div key={bIdx}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '6px' }}>
-                                                <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600' }}>
-                                                    {benefit.name}
+                                            <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start', marginBottom: '6px' }}>
+                                                {benefit.icon && (
+                                                    <img src={benefit.icon} alt="" style={{ width: '20px', height: '20px', marginTop: '2px', objectFit: 'contain' }} />
+                                                )}
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600' }}>
+                                                            {benefit.name}
+                                                        </div>
+                                                        <div style={{ textAlign: 'right' }}>
+                                                            <span style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{benefit.remaining_str}</span>
+                                                            <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/ {benefit.total_str}</span>
+                                                        </div>
+                                                    </div>
+                                                    {/* Progress Bar Container */}
+                                                    <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden', marginTop: '8px' }}>
+                                                        <div
+                                                            style={{
+                                                                width: `${percentage}%`,
+                                                                height: '100%',
+                                                                background: 'linear-gradient(90deg, var(--primary), var(--accent))',
+                                                                borderRadius: '10px',
+                                                                transition: 'width 1s ease-out'
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </div>
-                                                <div style={{ textAlign: 'right' }}>
-                                                    <span style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{benefit.remaining_str}</span>
-                                                    <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/ {benefit.total_str}</span>
-                                                </div>
-                                            </div>
-                                            {/* Progress Bar Container */}
-                                            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden' }}>
-                                                <div
-                                                    style={{
-                                                        width: `${percentage}%`,
-                                                        height: '100%',
-                                                        background: 'linear-gradient(90deg, var(--primary), var(--accent))',
-                                                        borderRadius: '10px',
-                                                        transition: 'width 1s ease-out'
-                                                    }}
-                                                />
                                             </div>
                                         </div>
                                     );
