@@ -230,8 +230,9 @@ def get_package_detail_api(family_code: str, variant_code: str, option_order: in
         if not res:
             raise HTTPException(status_code=404, detail="Package detail not found")
         
-        # Inject option_order for the frontend to use in purchase
+        # Inject option_order and variant_code for the frontend
         res["package_option"]["order"] = option_order
+        res["package_variant_code"] = variant_code
         
         # Format benefits like CLI
         benefits = res.get("package_option", {}).get("benefits", [])
@@ -254,6 +255,7 @@ def get_package_detail_api(family_code: str, variant_code: str, option_order: in
 @app.post("/api/packages/purchase/family")
 def purchase_package(payload: dict = Body(...)):
     family_code = payload.get("family_code")
+    variant_code = payload.get("variant_code", "")
     option_order = payload.get("option_order")
     method = payload.get("method", "pulsa") # Default to pulsa
     
@@ -276,7 +278,7 @@ def purchase_package(payload: dict = Body(...)):
 
     try:
         # Get main package detail
-        target_package_detail = get_package_details(api_key, tokens, family_code, "", option_order) # Note: variant code empty to auto-find
+        target_package_detail = get_package_details(api_key, tokens, family_code, variant_code, option_order)
         if not target_package_detail:
             raise HTTPException(status_code=404, detail=f"Package not found for order {option_order}")
 

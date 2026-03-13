@@ -102,8 +102,8 @@ class AutoBuy:
         
         if not exists:
             # Prevent duplicates if same config sent twice (race condition)
-            for c in self.configs:
                 if (c.get("family_code") == config.get("family_code") and 
+                    c.get("variant_code") == config.get("variant_code") and 
                     c.get("package_order") == config.get("package_order") and 
                     c.get("quota_keyword") == config.get("quota_keyword")):
                     return 
@@ -146,6 +146,7 @@ class AutoBuy:
             if not config.get("enabled"): continue
             
             family_code = config.get("family_code")
+            variant_code = config.get("variant_code", "")
             package_order = config.get("package_order")
             keyword = config.get("quota_keyword", "").lower()
             
@@ -170,7 +171,7 @@ class AutoBuy:
             
             if is_empty:
                 try:
-                    success = self.execute_purchase(family_code, package_order)
+                    success = self.execute_purchase(family_code, variant_code, package_order)
                     if success:
                         self.log_event("SUCCESS", f"Kuota '{keyword}' HABIS. Paket #{package_order} berhasil dibeli otomatis.")
                     else:
@@ -197,13 +198,13 @@ class AutoBuy:
 
         return {"status": "DONE", "results": results}
 
-    def execute_purchase(self, family_code: str, option_order: int):
+    def execute_purchase(self, family_code: str, variant_code: str, option_order: int):
         active_user = AuthInstance.get_active_user()
         api_key = AuthInstance.api_key
         tokens = AuthInstance.get_active_tokens()
         
         # Get details
-        detail = get_package_details(api_key, tokens, family_code, "", option_order)
+        detail = get_package_details(api_key, tokens, family_code, variant_code, option_order)
         if not detail: return False
         
         payment_items = [

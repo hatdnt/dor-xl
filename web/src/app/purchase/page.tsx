@@ -219,7 +219,7 @@ export default function PurchasePage() {
                     const allPkg: any[] = [];
                     data.data.package_variants.forEach((v: any) => {
                         v.package_options.forEach((p: any) => {
-                            allPkg.push({ ...p, variantName: v.name });
+                            allPkg.push({ ...p, variantName: v.name, variantCode: v.package_variant_code });
                         });
                     });
                     setTempAutoBuy((prev: any) => ({
@@ -273,6 +273,7 @@ export default function PurchasePage() {
 
         const newConfig = {
             family_code: tempAutoBuy.familyCode,
+            variant_code: pkg.variantCode,
             package_order: pkg.order,
             quota_keyword: keyword,
             enabled: true
@@ -338,6 +339,7 @@ export default function PurchasePage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 family_code: familyCode,
+                variant_code: selectedDetail.package_variant_code,
                 option_order: optionOrder,
                 method: method,
                 wallet_number: walletNum
