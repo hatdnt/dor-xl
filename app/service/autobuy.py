@@ -101,7 +101,7 @@ class AutoBuy:
                     break
         
         if not exists:
-            # Prevent duplicates if same config sent twice (race condition)
+            for c in self.configs:
                 if (c.get("family_code") == config.get("family_code") and 
                     c.get("variant_code") == config.get("variant_code") and 
                     c.get("package_order") == config.get("package_order") and 
