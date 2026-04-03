@@ -7,6 +7,7 @@ export default function Home() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [serverExpiry, setServerExpiry] = useState<string | null>(null);
+  const [serverLoading, setServerLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -24,7 +25,9 @@ export default function Home() {
       .then(res => res.json())
       .then(data => {
         if (data.status === "SUCCESS") setServerExpiry(data.expiry_date);
-      });
+        setServerLoading(false);
+      })
+      .catch(() => setServerLoading(false));
   }, []);
 
   if (loading) {
@@ -36,9 +39,10 @@ export default function Home() {
   }
 
   const getServerExpiryDisplay = () => {
+    if (serverLoading) return "Menghubungkan...";
     if (serverExpiry) return serverExpiry;
 
-    // Fallback: Use 31-day logic from base date
+    // Fallback: Use 31-day logic from base date if API fails or data is empty
     let expiry = new Date("2026-05-05T00:00:00");
     const now = new Date();
     while (expiry <= now) {
