@@ -28,12 +28,28 @@ export default function Home() {
     );
   }
 
+  const getServerExpiryDate = () => {
+    let expiry = new Date("2026-05-05T00:00:00");
+    const now = new Date();
+    while (expiry <= now) {
+      expiry.setDate(expiry.getDate() + 31);
+    }
+    return expiry.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  };
+
   return (
     <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
       <header style={{ marginBottom: '32px', textAlign: 'center' }}>
         <h1 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '8px' }}>MYnyak Engsel Sunset</h1>
         <div className="status-badge status-active">Online</div>
       </header>
+
+      <div className="glass-card animate-fade" style={{ marginBottom: '24px', border: '1px solid rgba(255, 165, 0, 0.2)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className="label" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Masa Aktif Server:</div>
+          <div className="value" style={{ fontSize: '1rem', color: 'white' }}>{getServerExpiryDate()}</div>
+        </div>
+      </div>
 
       {profile ? (
         <div className="glass-card animate-fade">
