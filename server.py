@@ -15,6 +15,7 @@ from app.client.ciam import get_otp, submit_otp, get_new_token
 from app.menus.package import fetch_my_packages, get_packages_by_family
 from app.service.bookmark import BookmarkInstance
 from app.service.autobuy import AutoBuyInstance
+from app.service.server_info import ServerInfoInstance
 import asyncio
 import time
 
@@ -435,7 +436,19 @@ def reset_autobuy():
 @app.get("/api/autobuy/trigger")
 async def trigger_autobuy():
     res = await AutoBuyInstance.run_check()
+    # Also sync server info if we're doing a periodic check
+    ServerInfoInstance.sync_from_telegram()
     return res
+
+@app.get("/api/server-info")
+def get_server_info():
+    expiry = ServerInfoInstance.get_expiry_date()
+    return {"status": "SUCCESS", "expiry_date": expiry}
+
+@app.post("/api/server-info/sync")
+def sync_server_info():
+    expiry = ServerInfoInstance.sync_from_telegram()
+    return {"status": "SUCCESS", "expiry_date": expiry}
 
 @app.on_event("startup")
 async def startup_event():

@@ -6,6 +6,7 @@ import Link from "next/link";
 export default function Home() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [serverExpiry, setServerExpiry] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -18,6 +19,12 @@ export default function Home() {
         console.error(err);
         setLoading(false);
       });
+
+    fetch("/api/server-info")
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "SUCCESS") setServerExpiry(data.expiry_date);
+      });
   }, []);
 
   if (loading) {
@@ -28,13 +35,16 @@ export default function Home() {
     );
   }
 
-  const getServerExpiryDate = () => {
+  const getServerExpiryDisplay = () => {
+    if (serverExpiry) return serverExpiry;
+
+    // Fallback: Use 31-day logic from base date
     let expiry = new Date("2026-05-05T00:00:00");
     const now = new Date();
     while (expiry <= now) {
       expiry.setDate(expiry.getDate() + 31);
     }
-    return expiry.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    return expiry.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + " (Est.)";
   };
 
   return (
@@ -47,7 +57,18 @@ export default function Home() {
       <div className="glass-card animate-fade" style={{ marginBottom: '24px', border: '1px solid rgba(255, 165, 0, 0.2)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className="label" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Masa Aktif Server:</div>
-          <div className="value" style={{ fontSize: '1rem', color: 'white' }}>{getServerExpiryDate()}</div>
+          <div className="value" style={{ fontSize: '1rem', color: 'white' }}>{getServerExpiryDisplay()}</div>
+        </div>
+        <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '12px' }}>
+          <a
+            href="https://howdy.id/login"
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary"
+            style={{ display: 'block', textAlign: 'center', fontSize: '0.85rem', textDecoration: 'none', padding: '10px' }}
+          >
+            💳 Bayar Perpanjang
+          </a>
         </div>
       </div>
 
