@@ -338,6 +338,14 @@ def purchase_package(payload: dict = Body(...)):
                 except: pass
         
         elif "qris" in method:
+            custom_amount = payload.get("custom_amount")
+            if custom_amount:
+                try:
+                    # Remove dots if any and convert to int
+                    main_price = int(str(custom_amount).replace(".", ""))
+                except ValueError:
+                    pass
+
             transaction_id = settlement_qris(
                 api_key, tokens, payment_items, "SHARE_PACKAGE", False,
                 overwrite_amount=main_price,

@@ -56,6 +56,7 @@ export default function PurchasePage() {
     const [selectedDetail, setSelectedDetail] = useState<any>(null);
     const [detailLoading, setDetailLoading] = useState(false);
     const [purchaseRes, setPurchaseRes] = useState<any>(null);
+    const [customQrisAmount, setCustomQrisAmount] = useState("");
 
     const purchaseMethods = [
         { id: 'pulsa', name: 'Pulsa', icon: '💰' },
@@ -342,7 +343,8 @@ export default function PurchasePage() {
                 variant_code: selectedDetail.package_variant_code,
                 option_order: optionOrder,
                 method: method,
-                wallet_number: walletNum
+                wallet_number: walletNum,
+                custom_amount: method.includes("qris") ? customQrisAmount : undefined
             })
         })
             .then(res => res.json())
@@ -368,7 +370,7 @@ export default function PurchasePage() {
         return (
             <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
                 <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button onClick={() => { setSelectedDetail(null); setPurchaseRes(null); }} className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', border: 'none', cursor: 'pointer', color: 'white' }}>
+                    <button onClick={() => { setSelectedDetail(null); setPurchaseRes(null); setCustomQrisAmount(""); }} className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', border: 'none', cursor: 'pointer', color: 'white' }}>
                         ←
                     </button>
                     <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Detail Paket</h1>
@@ -405,6 +407,39 @@ export default function PurchasePage() {
                                 {(!selectedDetail.package_option?.benefits || selectedDetail.package_option?.benefits.length === 0) && (
                                     <div className="label" style={{ fontSize: '0.8rem' }}>Sesuai Syarat & Ketentuan</div>
                                 )}
+                            </div>
+
+                            <div className="label" style={{ marginBottom: '12px', color: 'white' }}>Atur Nominal QRIS (Opsional):</div>
+                            <div style={{ marginBottom: '20px' }}>
+                                <input
+                                    type="text"
+                                    placeholder={`Contoh: ${(selectedDetail.package_option.price || 0).toLocaleString('id-ID')}`}
+                                    value={customQrisAmount}
+                                    onChange={(e) => {
+                                        const raw = e.target.value.replace(/\./g, "");
+                                        if (raw === "") {
+                                            setCustomQrisAmount("");
+                                            return;
+                                        }
+                                        const num = parseInt(raw);
+                                        if (!isNaN(num)) {
+                                            setCustomQrisAmount(num.toLocaleString("id-ID"));
+                                        }
+                                    }}
+                                    style={{
+                                        width: '100%',
+                                        background: 'rgba(255,255,255,0.05)',
+                                        border: '1px solid var(--glass-border)',
+                                        borderRadius: '12px',
+                                        padding: '12px',
+                                        color: 'white',
+                                        outline: 'none',
+                                        fontSize: '0.9rem'
+                                    }}
+                                />
+                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginTop: '6px', marginLeft: '4px' }}>
+                                    Wajib diisi jika harga paket berbeda dengan nominal di aplikasi.
+                                </div>
                             </div>
 
                             <div className="label" style={{ marginBottom: '12px', color: 'white' }}>Pilih Metode Pembayaran:</div>
