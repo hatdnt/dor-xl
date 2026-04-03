@@ -442,6 +442,8 @@ async def trigger_autobuy():
 
 @app.get("/api/server-info")
 def get_server_info():
+    # Sync from telegram on every refresh for now to ensure it's up to date
+    ServerInfoInstance.sync_from_telegram()
     expiry = ServerInfoInstance.get_expiry_date()
     return {"status": "SUCCESS", "expiry_date": expiry}
 

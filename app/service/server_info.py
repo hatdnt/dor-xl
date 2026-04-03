@@ -27,43 +27,76 @@ class ServerInfo:
             return True
         return False
 
+    def send_message(self, chat_id, text):
+        try:
+            url = f"{TELEGRAM_BASE_URL}/bot{TELEGRAM_TOKEN}/sendMessage"
+            requests.post(url, json={"chat_id": chat_id, "text": text}, timeout=10)
+        except Exception as e:
+            print(f"Error sending Telegram message: {e}")
+
     def sync_from_telegram(self):
         try:
-            # Use provided proxy URL
+            # Use offset to only get new messages
+            last_offset = 0
+            if AuthInstance.kv_client:
+                offset_data = AuthInstance.kv_client.get("telegram_last_offset")
+                if offset_data:
+                    last_offset = int(offset_data)
+
             url = f"{TELEGRAM_BASE_URL}/bot{TELEGRAM_TOKEN}/getUpdates"
+            params = {"offset": last_offset + 1, "timeout": 5}
             
-            # Use offset to only get new messages if needed, 
-            # but for simplicity we'll just check last few messages
-            resp = requests.get(url, timeout=10)
+            print(f"[ServerInfo] Syncing Telegram (offset={last_offset + 1})...")
+            resp = requests.get(url, params=params, timeout=15)
             if resp.status_code != 200:
-                print(f"Telegram sync failed: {resp.status_code}")
-                return False
+                print(f"[ServerInfo] Telegram sync failed: {resp.status_code} - {resp.text}")
+                return None
                 
             data = resp.json()
             if not data.get("ok"):
-                return False
+                print(f"[ServerInfo] Telegram API error: {data}")
+                return None
                 
             updates = data.get("result", [])
-            found_date = None
-            
-            for update in reversed(updates):
-                message = update.get("message", {}).get("text", "")
+            if not updates:
+                print("[ServerInfo] No new messages found.")
+                return None
+
+            latest_found_date = None
+            max_update_id = last_offset
+
+            for update in updates:
+                update_id = update.get("update_id")
+                if update_id > max_update_id:
+                    max_update_id = update_id
+
+                message_obj = update.get("message", {})
+                chat_id = message_obj.get("chat", {}).get("id")
+                message = message_obj.get("text", "")
+                
+                if not message: continue
+
                 if "Akun Howdy dengan username" in message and "berakhir pada" in message:
-                    # Regex for format: 03-Apr-2026
                     match = re.search(r"(\d{2}-[a-zA-Z]{3}-\d{4})", message)
                     if match:
                         found_date = match.group(1)
-                        # Once found the most recent one, we can stop
-                        break
+                        latest_found_date = found_date
+                        self.set_expiry_date(found_date)
+                        self.send_message(chat_id, f"✅ Update Berhasil!\nMasa aktif server diperbarui menjadi: {found_date}")
+                        print(f"[ServerInfo] Successfully updated expiry to {found_date}")
+                    else:
+                        self.send_message(chat_id, "❌ Gagal: Format tanggal tidak ditemukan dalam pesan.")
+                elif "/start" in message or "/status" in message:
+                    current = self.get_expiry_date() or "Belum diatur"
+                    self.send_message(chat_id, f"🤖 Server Status:\nMasa Aktif Saat Ini: {current}")
+
+            # Update offset in Redis
+            if AuthInstance.kv_client:
+                AuthInstance.kv_client.set("telegram_last_offset", max_update_id)
             
-            if found_date:
-                print(f"Found new expiry date: {found_date}")
-                self.set_expiry_date(found_date)
-                return found_date
-                
-            return None
+            return latest_found_date
         except Exception as e:
-            print(f"Error syncing from Telegram: {e}")
+            print(f"[ServerInfo] Sync Exception: {e}")
             return None
 
 ServerInfoInstance = ServerInfo()
