@@ -59,7 +59,8 @@ def ax_fingerprint(dev: DeviceInfo, secret_key_32hex_ascii: str) -> str:
 from app.util import get_writable_path
 
 def load_ax_fp() -> str:
-    kv_url = os.environ.get("KV_URL")
+    # Check both KV_URL and REDIS_URL (consistent with auth.py)
+    kv_url = os.environ.get("KV_URL") or os.environ.get("REDIS_URL")
     kv_client = None
     if kv_url:
         try:
@@ -74,6 +75,11 @@ def load_ax_fp() -> str:
         with open(fp_path, "r", encoding="utf-8") as f:
             content = f.read().strip()
             if content:
+                # Also save to KV if we loaded from file but KV didn't have it
+                if kv_client:
+                    try:
+                        kv_client.set("ax-fingerprint", content)
+                    except: pass
                 return content
     
     # Generate new if not found
@@ -95,6 +101,7 @@ def load_ax_fp() -> str:
     if kv_client:
         try:
             kv_client.set("ax-fingerprint", new_fp)
+            print(f"Fingerprint saved to KV successfully.")
         except: pass
 
     # Also save to /tmp as local cache
