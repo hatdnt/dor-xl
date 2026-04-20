@@ -219,7 +219,7 @@ def get_new_token(api_key: str, refresh_token: str, subscriber_id: str) -> str:
         error_desc = error_body.get("error_description", "")
         
         # User Agent mismatch - refresh token terikat ke UA/device berbeda
-        # Harus re-login via OTP, extend session tidak akan membantu
+        # Harus re-login via OTP, extend session tidak akan membantuu
         if "User Agent mismatch" in error_msg:
             print(f"[CIAM Error] User Agent mismatch saat token refresh.")
             print(f"  -> Refresh token ini dibuat dengan User-Agent/device yang berbeda.")
