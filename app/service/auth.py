@@ -205,12 +205,18 @@ class Auth:
                 self.load_active_number_from_kv()
                 
             if not self.active_user and len(self.refresh_tokens) != 0:
-                # Choose the first user if available
-                first_rt = self.refresh_tokens[0]
-                print(f"Restoring session for {first_rt['number']}...")
-                tokens = get_new_token(self.api_key, first_rt["refresh_token"], first_rt.get("subscriber_id", ""))
-                if tokens:
-                    self.set_active_user(first_rt["number"])
+                # Try each stored token until one works
+                for rt_entry in list(self.refresh_tokens):
+                    print(f"Restoring session for {rt_entry['number']}...")
+                    try:
+                        tokens = get_new_token(self.api_key, rt_entry["refresh_token"], rt_entry.get("subscriber_id", ""))
+                        if tokens:
+                            self.set_active_user(rt_entry["number"])
+                            break
+                        else:
+                            print(f"  -> Token untuk {rt_entry['number']} tidak valid, mencoba nomor berikutnya...")
+                    except Exception as e:
+                        print(f"  -> Error restoring {rt_entry['number']}: {e}, mencoba nomor berikutnya...")
             
             # If still None, return None
             if not self.active_user:

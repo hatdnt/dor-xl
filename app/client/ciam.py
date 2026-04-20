@@ -214,7 +214,19 @@ def get_new_token(api_key: str, refresh_token: str, subscriber_id: str) -> str:
     print("Refreshing token...")
     resp = requests.post(url, headers=headers, data=data, timeout=30)
     if resp.status_code == 400:
-        if resp.json().get("error_description") != "Session not active":
+        error_body = resp.json()
+        error_msg = error_body.get("error", "")
+        error_desc = error_body.get("error_description", "")
+        
+        # User Agent mismatch - refresh token terikat ke UA/device berbeda
+        # Harus re-login via OTP, extend session tidak akan membantu
+        if "User Agent mismatch" in error_msg:
+            print(f"[CIAM Error] User Agent mismatch saat token refresh.")
+            print(f"  -> Refresh token ini dibuat dengan User-Agent/device yang berbeda.")
+            print(f"  -> Solusi: Hapus akun ini dan login ulang via OTP.")
+            return None
+        
+        if error_desc != "Session not active":
             print(f"Failed to refresh token: {resp.status_code} - {resp.text}")
             return None
 
@@ -223,7 +235,9 @@ def get_new_token(api_key: str, refresh_token: str, subscriber_id: str) -> str:
         
         exchange_code = extend_session(subscriber_id)
         if exchange_code is None:
-            raise ValueError("Failed to get exchange code")
+            print(f"[CIAM Error] Extend session gagal. Kemungkinan nomor tidak ditemukan di server.")
+            print(f"  -> Solusi: Hapus akun ini dan login ulang via OTP.")
+            return None
         
         extend_result = submit_otp(
             api_key,
