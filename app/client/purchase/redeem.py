@@ -15,6 +15,7 @@ from app.client.encrypt import (
     java_like_timestamp,
     get_x_signature_bounty,
     get_x_signature_bounty_allotment,
+    load_ax_fp,
 )
 
 BASE_API_URL = os.getenv("BASE_API_URL")
@@ -44,7 +45,7 @@ def settlement_bounty(
         "ewallet_promo_id": "",
         "members": [],
         "total_fee": 0,
-        "fingerprint": "",
+        "fingerprint": load_ax_fp(),
         "autobuy_threshold_setting": {
             "label": "",
             "type": "",
@@ -137,7 +138,8 @@ def settlement_bounty(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.9.0",
+        "x-version-app": "9.1.0",
+        "Ax-Fingerprint": load_ax_fp(),
     }
     
     url = f"{BASE_API_URL}/{path}"
@@ -214,7 +216,8 @@ def settlement_loyalty(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.9.0",
+        "x-version-app": "9.1.0",
+        "Ax-Fingerprint": load_ax_fp(),
     }
 
     url = f"{BASE_API_URL}/{path}"
@@ -291,7 +294,8 @@ def bounty_allotment(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.9.0",
+        "x-version-app": "9.1.0",
+        "Ax-Fingerprint": load_ax_fp(),
     }
     
     url = f"{BASE_API_URL}/{path}"

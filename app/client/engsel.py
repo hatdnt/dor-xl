@@ -9,6 +9,7 @@ from app.client.encrypt import (
     encryptsign_xdata,
     java_like_timestamp,
     decrypt_xdata,
+    load_ax_fp,
     API_KEY,
 )
 
@@ -51,7 +52,8 @@ def send_api_request(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(now),
-        "x-version-app": "8.9.0",
+        "x-version-app": "9.1.0",
+        "Ax-Fingerprint": load_ax_fp(),
     }
 
     url = f"{BASE_API_URL}/{path}"
@@ -73,7 +75,7 @@ def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
 
     raw_payload = {
         "access_token": access_token,
-        "app_version": "8.9.0",
+        "app_version": "9.1.0",
         "is_enterprise": False,
         "lang": "en"
     }

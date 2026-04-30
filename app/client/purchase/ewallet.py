@@ -6,7 +6,7 @@ import requests
 from datetime import datetime, timezone, timedelta
 
 from app.client.engsel import BASE_API_URL, UA, intercept_page, send_api_request
-from app.client.encrypt import API_KEY, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment
+from app.client.encrypt import API_KEY, decrypt_xdata, encryptsign_xdata, java_like_timestamp, get_x_signature_payment, load_ax_fp
 from app.type_dict import PaymentItem
 
 def settlement_multipayment(
@@ -150,7 +150,8 @@ def settlement_multipayment(
         "x-signature": x_sig,
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
-        "x-version-app": "8.9.0",
+        "x-version-app": "9.1.0",
+        "Ax-Fingerprint": load_ax_fp(),
     }
     
     url = f"{BASE_API_URL}/{path}"
