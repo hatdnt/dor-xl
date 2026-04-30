@@ -17,6 +17,7 @@ BASE_API_URL = os.getenv("BASE_API_URL")
 if not BASE_API_URL:
     raise ValueError("BASE_API_URL environment variable not set")
 UA = os.getenv("UA")
+UA_V9 = "myXL / 9.1.0(1300); com.android.vending; (samsung; SM-N935F; SDK 33; Android 13)"
 
 def send_api_request(
     api_key: str,
@@ -44,7 +45,7 @@ def send_api_request(
     headers = {
         "host": BASE_API_URL.replace("https://", ""),
         "content-type": "application/json; charset=utf-8",
-        "user-agent": UA,
+        "user-agent": UA_V9,
         "x-api-key": API_KEY,
         "authorization": f"Bearer {id_token}",
         "x-hv": "v3",
@@ -53,7 +54,7 @@ def send_api_request(
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(now),
         "x-version-app": "9.1.0",
-        "Ax-Fingerprint": load_ax_fp(),
+        "ax-fingerprint": load_ax_fp(),
     }
 
     url = f"{BASE_API_URL}/{path}"
@@ -67,7 +68,7 @@ def send_api_request(
         # print(f"Decrypted body: {json.dumps(decrypted_body, indent=2)}")
         return decrypted_body
     except Exception as e:
-        print("[decrypt err]", e)
+        print(f"[decrypt err] {e} | Response: {resp.text[:200]}")
         return resp.text
 
 def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
@@ -83,6 +84,9 @@ def get_profile(api_key: str, access_token: str, id_token: str) -> dict:
     print("Fetching profile...")
     res = send_api_request(api_key, path, raw_payload, id_token, "POST")
 
+    if not isinstance(res, dict) or "data" not in res:
+        print(f"[Profile Error] {res}")
+        return None
     return res.get("data")
 
 def get_balance(api_key: str, id_token: str) -> dict:

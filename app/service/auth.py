@@ -103,6 +103,10 @@ class Auth:
         else:
             tokens = get_new_token(self.api_key, refresh_token, "")
             profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
+            if not profile_data:
+                print(f"Failed to fetch profile for {number}")
+                return False
+                
             sub_id = profile_data["profile"]["subscriber_id"]
             sub_type = profile_data["profile"]["subscription_type"]
 
@@ -156,6 +160,10 @@ class Auth:
             return False
 
         profile_data = get_profile(self.api_key, tokens["access_token"], tokens["id_token"])
+        if not profile_data:
+            print(f"Failed to fetch profile for {number} in set_active_user")
+            return False
+            
         subscriber_id = profile_data["profile"]["subscriber_id"]
         subscription_type = profile_data["profile"]["subscription_type"]
 

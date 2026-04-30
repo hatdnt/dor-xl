@@ -165,7 +165,8 @@ def get_my_packages():
     payload = {
         "is_enterprise": False,
         "lang": "en",
-        "family_member_id": ""
+        "family_member_id": "",
+        "access_token": active_user["tokens"]["access_token"]
     }
     
     res = send_api_request(

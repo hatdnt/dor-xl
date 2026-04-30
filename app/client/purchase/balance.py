@@ -5,7 +5,7 @@ import uuid
 
 import requests
 from app.client.encrypt import API_KEY, build_encrypted_field, decrypt_xdata, encryptsign_xdata, get_x_signature_payment, java_like_timestamp, load_ax_fp
-from app.client.engsel import BASE_API_URL, UA, intercept_page, send_api_request
+from app.client.engsel import BASE_API_URL, UA, intercept_page, send_api_request, UA_V9
 from app.type_dict import PaymentItem
 
 def settlement_balance(
@@ -169,7 +169,7 @@ def settlement_balance(
     headers = {
         "host": BASE_API_URL.replace("https://", ""),
         "content-type": "application/json; charset=utf-8",
-        "user-agent": UA,
+        "user-agent": UA_V9,
         "x-api-key": API_KEY,
         "authorization": f"Bearer {tokens['id_token']}",
         "x-hv": "v3",
@@ -178,7 +178,7 @@ def settlement_balance(
         "x-request-id": str(uuid.uuid4()),
         "x-request-at": java_like_timestamp(x_requested_at),
         "x-version-app": "9.1.0",
-        "Ax-Fingerprint": load_ax_fp(),
+        "ax-fingerprint": load_ax_fp(),
     }
     
     url = f"{BASE_API_URL}/{path}"
