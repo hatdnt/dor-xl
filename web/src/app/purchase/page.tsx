@@ -452,7 +452,6 @@ export default function PurchasePage() {
                                         onClick={() => handlePurchase(m.id)}
                                         disabled={loading}
                                     >
-                                        <div style={{ fontSize: '1.2rem', marginBottom: '4px' }}>{m.icon}</div>
                                         <div style={{ fontSize: '0.8rem', fontWeight: '500' }}>{m.name}</div>
                                     </button>
                                 ))}
