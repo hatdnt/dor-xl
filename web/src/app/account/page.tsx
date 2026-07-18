@@ -125,10 +125,10 @@ export default function AccountPage() {
 
     if (loading) {
         return (
-                  <div className="loading-container animate-fade">
-        <div className="loader"></div>
-        <div className="loading-text">Memuat...</div>
-      </div>
+            <div className="loading-container animate-fade">
+                <div className="loader"></div>
+                <div className="loading-text">Memuat...</div>
+            </div>
         );
     }
 
@@ -230,7 +230,7 @@ export default function AccountPage() {
                             <div>
                                 <input
                                     type="text" value={msisdn} onChange={e => setMsisdn(e.target.value)}
-                                    placeholder="Nomor HP (Contoh: 0812...)"
+                                    placeholder="Nomor HP (Contoh: 62812...)"
                                     style={{ width: '100%', padding: '12px', background: 'var(--background)', border: '1px solid var(--border-thin)', borderRadius: '12px', color: 'inherit', marginBottom: '16px' }}
                                 />
                                 <button className="btn-primary" style={{ width: '100%' }} onClick={handleRequestOtp} disabled={authLoading}>
