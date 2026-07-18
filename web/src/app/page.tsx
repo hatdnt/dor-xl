@@ -9,9 +9,12 @@ export default function Home() {
 
   useEffect(() => {
     fetch("/api/profile")
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) { setLoading(false); return; }
+        return res.json();
+      })
       .then(data => {
-        setProfile(data);
+        if (data) setProfile(data);
         setLoading(false);
       })
       .catch(err => {

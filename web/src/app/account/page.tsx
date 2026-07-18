@@ -5,14 +5,16 @@ import Link from "next/link";
 
 export default function AccountPage() {
     const [accounts, setAccounts] = useState<any[]>([]);
+    const [activeNumber, setActiveNumber] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [switching, setSwitching] = useState<number | null>(null);
+    const [deleting, setDeleting] = useState<number | null>(null);
 
     // OTP Flow State
     const [showOtpModal, setShowOtpModal] = useState(false);
     const [msisdn, setMsisdn] = useState("");
     const [otp, setOtp] = useState("");
-    const [otpStep, setOtpStep] = useState(1); // 1: MSISDN, 2: OTP
+    const [otpStep, setOtpStep] = useState(1);
     const [authLoading, setAuthLoading] = useState(false);
 
     useEffect(() => {
@@ -24,7 +26,8 @@ export default function AccountPage() {
         fetch("/api/auth/accounts")
             .then(res => res.json())
             .then(data => {
-                setAccounts(data || []);
+                setAccounts(data.accounts || []);
+                setActiveNumber(data.active_number ?? null);
                 setLoading(false);
             })
             .catch(err => {
@@ -40,13 +43,31 @@ export default function AccountPage() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ number })
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) return res.json().then(e => { throw new Error(e.detail || "Gagal switch akun"); });
+                return res.json();
+            })
             .then(() => {
                 window.location.href = "/";
             })
             .catch(err => {
-                console.error(err);
+                alert(err.message);
                 setSwitching(null);
+            });
+    };
+
+    const handleDelete = (number: number) => {
+        if (!confirm(`Hapus akun ${number}? Kamu perlu login ulang via OTP untuk menambahkannya kembali.`)) return;
+        setDeleting(number);
+        fetch(`/api/auth/accounts/${number}`, { method: "DELETE" })
+            .then(res => res.json())
+            .then(() => {
+                fetchAccounts();
+                setDeleting(null);
+            })
+            .catch(err => {
+                console.error(err);
+                setDeleting(null);
             });
     };
 
@@ -120,29 +141,66 @@ export default function AccountPage() {
                 <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Ganti Akun</h1>
             </header>
 
+            {/* Active Number Indicator */}
+            {activeNumber && (
+                <div className="animate-fade" style={{
+                    marginBottom: '20px', padding: '12px 16px', borderRadius: '12px',
+                    background: 'rgba(34, 197, 94, 0.08)', border: '1px solid rgba(34, 197, 94, 0.2)',
+                    display: 'flex', alignItems: 'center', gap: '10px'
+                }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', boxShadow: '0 0 6px #22c55e' }} />
+                    <span style={{ fontSize: '0.85rem', color: '#86efac' }}>Aktif: <strong style={{ color: '#fafafa' }}>{activeNumber}</strong></span>
+                </div>
+            )}
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {accounts.length > 0 ? (
-                    accounts.map((acc, idx) => (
-                        <div key={idx} className="glass-card animate-fade" style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            opacity: switching && switching !== acc.number ? 0.5 : 1
-                        }}>
-                            <div>
-                                <div className="value">{acc.number}</div>
-                                <div className="label">{acc.subscription_type} • {acc.subscriber_id}</div>
+                    accounts.map((acc, idx) => {
+                        const isActive = acc.number === activeNumber;
+                        return (
+                            <div key={idx} className="glass-card animate-fade" style={{
+                                display: 'flex',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                opacity: switching && switching !== acc.number ? 0.5 : 1,
+                                borderColor: isActive ? 'rgba(34, 197, 94, 0.3)' : undefined,
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                    {isActive && (
+                                        <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', flexShrink: 0, boxShadow: '0 0 6px #22c55e' }} />
+                                    )}
+                                    <div>
+                                        <div className="value">{acc.number}</div>
+                                        <div className="label">{acc.subscription_type} • {acc.subscriber_id}</div>
+                                    </div>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    {!isActive && (
+                                        <button
+                                            className="btn-primary"
+                                            style={{ padding: '8px 16px', fontSize: '0.8rem' }}
+                                            onClick={() => handleSwitch(acc.number)}
+                                            disabled={switching !== null || deleting !== null}
+                                        >
+                                            {switching === acc.number ? "..." : "Pilih"}
+                                        </button>
+                                    )}
+                                    <button
+                                        style={{
+                                            padding: '8px 12px', fontSize: '0.8rem', borderRadius: '12px',
+                                            background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)',
+                                            color: '#f87171', cursor: 'pointer', transition: 'opacity 0.2s',
+                                            opacity: deleting === acc.number ? 0.5 : 1,
+                                        }}
+                                        onClick={() => handleDelete(acc.number)}
+                                        disabled={switching !== null || deleting !== null}
+                                    >
+                                        {deleting === acc.number ? "..." : "Hapus"}
+                                    </button>
+                                </div>
                             </div>
-                            <button
-                                className="btn-primary"
-                                style={{ padding: '8px 16px', fontSize: '0.8rem' }}
-                                onClick={() => handleSwitch(acc.number)}
-                                disabled={switching !== null}
-                            >
-                                {switching === acc.number ? "..." : "Pilih"}
-                            </button>
-                        </div>
-                    ))
+                        );
+                    })
                 ) : (
                     <div className="glass-card" style={{ textAlign: 'center', padding: '40px' }}>
                         <p>Belum ada akun tersimpan.</p>
