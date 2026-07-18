@@ -59,14 +59,14 @@ export default function PurchasePage() {
     const [customQrisAmount, setCustomQrisAmount] = useState("");
 
     const purchaseMethods = [
-        { id: 'pulsa', name: 'Pulsa', icon: '💰' },
-        { id: 'pulsa_decoy', name: 'Pulsa + Decoy', icon: '🤫' },
-        { id: 'pulsa_decoy_v2', name: 'Pulsa + Decoy V2', icon: '🕵️' },
-        { id: 'qris', name: 'QRIS', icon: '📱' },
-        { id: 'qris_decoy', name: 'QRIS + Decoy', icon: '🔄' },
-        { id: 'wallet_dana', name: 'DANA', icon: '💎' },
-        { id: 'wallet_ovo', name: 'OVO', icon: '💜' },
-        { id: 'wallet_gopay', name: 'GoPay', icon: '🛵' },
+        { id: 'pulsa', name: 'Pulsa' },
+        { id: 'pulsa_decoy', name: 'Pulsa + Decoy' },
+        { id: 'pulsa_decoy_v2', name: 'Pulsa + Decoy V2' },
+        { id: 'qris', name: 'QRIS' },
+        { id: 'qris_decoy', name: 'QRIS + Decoy' },
+        { id: 'wallet_dana', name: 'DANA' },
+        { id: 'wallet_ovo', name: 'OVO' },
+        { id: 'wallet_gopay', name: 'GoPay' },
     ];
 
     const handleFetchFamily = (codeToFetch?: string) => {
@@ -370,7 +370,7 @@ export default function PurchasePage() {
         return (
             <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
                 <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <button onClick={() => { setSelectedDetail(null); setPurchaseRes(null); setCustomQrisAmount(""); }} className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', border: 'none', cursor: 'pointer', color: 'white' }}>
+                    <button onClick={() => { setSelectedDetail(null); setPurchaseRes(null); setCustomQrisAmount(""); }} className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', border: 'none', cursor: 'pointer', color: 'inherit' }}>
                         ←
                     </button>
                     <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Detail Paket</h1>
@@ -409,7 +409,7 @@ export default function PurchasePage() {
                                 )}
                             </div>
 
-                            <div className="label" style={{ marginBottom: '12px', color: 'white' }}>Atur Nominal QRIS (Opsional):</div>
+                            <div className="label" style={{ marginBottom: '12px', color: 'inherit' }}>Atur Nominal QRIS (Opsional):</div>
                             <div style={{ marginBottom: '20px' }}>
                                 <input
                                     type="text"
@@ -428,27 +428,27 @@ export default function PurchasePage() {
                                     }}
                                     style={{
                                         width: '100%',
-                                        background: 'rgba(255,255,255,0.05)',
-                                        border: '1px solid var(--glass-border)',
+                                        background: 'var(--background)',
+                                        border: '1px solid var(--border-thin)',
                                         borderRadius: '12px',
                                         padding: '12px',
-                                        color: 'white',
+                                        color: 'inherit',
                                         outline: 'none',
                                         fontSize: '0.9rem'
                                     }}
                                 />
-                                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginTop: '6px', marginLeft: '4px' }}>
+                                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '6px', marginLeft: '4px' }}>
                                     Wajib diisi jika harga paket berbeda dengan nominal di aplikasi.
                                 </div>
                             </div>
 
-                            <div className="label" style={{ marginBottom: '12px', color: 'white' }}>Pilih Metode Pembayaran:</div>
+                            <div className="label" style={{ marginBottom: '12px', color: 'inherit' }}>Pilih Metode Pembayaran:</div>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
                                 {purchaseMethods.map(m => (
                                     <button
                                         key={m.id}
                                         className="glass-card"
-                                        style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white' }}
+                                        style={{ padding: '12px', textAlign: 'center', cursor: 'pointer', border: '1px solid var(--border-thin)', borderRadius: '12px', color: 'inherit' }}
                                         onClick={() => handlePurchase(m.id)}
                                         disabled={loading}
                                     >
@@ -470,7 +470,7 @@ export default function PurchasePage() {
                     )}
 
                     {purchaseRes && !purchaseRes.qris_code && (
-                        <div className="glass-card" style={{ background: 'rgba(0,255,0,0.1)', borderColor: 'rgba(0,255,0,0.2)', marginBottom: '24px' }}>
+                        <div className="glass-card" style={{ background: 'var(--background)', borderColor: 'var(--border-thin)', marginBottom: '24px' }}>
                             <div className="value" style={{ fontSize: '1.1rem', color: '#44ff44' }}>Berhasil!</div>
                             <p className="label" style={{ marginTop: '8px' }}>{purchaseRes.message || "Transaksi Anda sedang diproses."}</p>
                             {purchaseRes.data?.deeplink && (
@@ -488,7 +488,7 @@ export default function PurchasePage() {
     return (
         <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
             <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'white' }}>
+                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'inherit' }}>
                     ←
                 </Link>
                 <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Beli Paket</h1>
@@ -505,11 +505,11 @@ export default function PurchasePage() {
                         style={{
                             flex: 1,
                             minWidth: 0,
-                            background: 'rgba(255,255,255,0.05)',
-                            border: '1px solid var(--glass-border)',
+                            background: 'var(--background)',
+                            border: '1px solid var(--border-thin)',
                             borderRadius: '12px',
                             padding: '12px',
-                            color: 'white',
+                            color: 'inherit',
                             outline: 'none',
                             fontSize: '0.9rem'
                         }}
@@ -539,7 +539,7 @@ export default function PurchasePage() {
                             onClick={() => addOrEditBookmark(familyCode)}
                             title="Simpan ke Bookmark"
                         >
-                            ★
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-bookmark-icon lucide-bookmark"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z" /></svg>
                         </button>
                     )}
                 </div>
@@ -559,30 +559,30 @@ export default function PurchasePage() {
                                     cursor: 'pointer',
                                     position: 'relative',
                                     animationDelay: `${i * 0.05}s`,
-                                    border: familyCode === item.code ? '1px solid var(--accent)' : '1px solid var(--glass-border)'
+                                    border: familyCode === item.code ? '1px solid var(--accent)' : '1px solid var(--border-thin)'
                                 }}
                                 onClick={() => handleFetchFamily(item.code)}
                             >
                                 <div style={{ position: 'absolute', top: '4px', right: '4px', display: 'flex', gap: '4px', zIndex: 10 }}>
                                     <button
                                         onClick={(e) => { e.stopPropagation(); addOrEditBookmark(item.code, item.name); }}
-                                        style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', fontSize: '0.7rem' }}
+                                        style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '0.7rem' }}
                                         title="Edit Nama"
                                     >
-                                        ✏️
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-square-pen-icon lucide-square-pen"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" /><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z" /></svg>
                                     </button>
                                     <button
                                         onClick={(e) => removeHistory(e, item.code)}
                                         style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '0.9rem' }}
                                         title="Hapus"
                                     >
-                                        ×
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                                     </button>
                                 </div>
                                 <div style={{
                                     fontSize: '0.85rem',
                                     fontWeight: 'bold',
-                                    color: 'white',
+                                    color: 'inherit',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
                                     whiteSpace: 'nowrap',
@@ -592,7 +592,7 @@ export default function PurchasePage() {
                                 </div>
                                 <div style={{
                                     fontSize: '0.65rem',
-                                    color: 'rgba(255,255,255,0.3)',
+                                    color: 'var(--text-secondary)',
                                     fontFamily: 'monospace',
                                     overflow: 'hidden',
                                     textOverflow: 'ellipsis',
@@ -628,10 +628,13 @@ export default function PurchasePage() {
                     </div>
                 ))}
             </div>
-            <div style={{ marginTop: '48px', borderTop: '1px solid var(--glass-border)', paddingTop: '24px' }}>
+            <div style={{ marginTop: '48px', borderTop: '1px solid var(--border-thin)', paddingTop: '24px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <h2 className="gradient-text" style={{ fontSize: '1.2rem' }}>⚙️ Auto Buy</h2>
+                        <h2 className="gradient-text" style={{ fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-shopping-cart-icon lucide-shopping-cart"><circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" /><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" /></svg>
+                            Auto Buy
+                        </h2>
                     </div>
                     <button className="btn-primary" style={{ padding: '8px 16px', fontSize: '0.8rem' }} onClick={handleAddAutoBuy}>+ Tambah</button>
                 </div>
@@ -643,10 +646,10 @@ export default function PurchasePage() {
                         {(autoBuyData.configs || []).map((config: any, i: number) => (
                             <div key={i} className="glass-card" style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', opacity: config.enabled ? 1 : 0.6 }}>
                                 <div>
-                                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '4px', color: 'white' }}>
+                                    <div style={{ fontWeight: 'bold', fontSize: '0.9rem', marginBottom: '4px', color: 'inherit' }}>
                                         Quota: <span style={{ color: 'var(--accent)' }}>{config.quota_keyword}</span>
                                     </div>
-                                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontFamily: 'monospace' }}>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontFamily: 'monospace' }}>
                                         Family: {config.family_code.substring(0, 8)}... | Order: {config.package_order}
                                     </div>
                                 </div>
@@ -676,9 +679,9 @@ export default function PurchasePage() {
                                     </div>
                                     <button
                                         onClick={() => handleDeleteAutoBuy(config.id)}
-                                        style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer', fontSize: '1.1rem' }}
+                                        style={{ background: 'none', border: 'none', color: '#ff4444', cursor: 'pointer' }}
                                     >
-                                        🗑️
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
                                     </button>
                                 </div>
                             </div>
@@ -689,62 +692,71 @@ export default function PurchasePage() {
                 {/* Logs Section */}
                 <div style={{ marginTop: '24px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                        <div className="label" style={{ fontSize: '0.8rem', fontWeight: 'bold' }}>🕒 Activity Logs (Auto Buy)</div>
+                        <div className="label" style={{ fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity-icon lucide-activity"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></svg>
+                            Activity Logs (Auto Buy)
+                        </div>
                         <div style={{ display: 'flex', gap: '15px' }}>
-                            <button onClick={handleResetAutoBuy} style={{ background: 'none', border: 'none', color: '#ff8800', cursor: 'pointer', fontSize: '0.7rem' }}>⚠️ Reset</button>
-                            <button onClick={refreshAutoBuyData} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.7rem' }}>🔄 Refresh</button>
+                            <button onClick={handleResetAutoBuy} style={{ background: 'none', border: 'none', color: '#ff8800', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-triangle-alert-icon lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3" /><path d="M12 9v4" /><path d="M12 17h.01" /></svg>
+                                Reset
+                            </button>
+                            <button onClick={refreshAutoBuyData} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer', fontSize: '0.7rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-cw-icon lucide-refresh-cw"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" /><path d="M21 3v5h-5" /><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" /><path d="M8 16H3v5" /></svg>
+                                Refresh
+                            </button>
                         </div>
                     </div>
-                    <div className="glass-card" style={{ padding: '10px', maxHeight: '200px', overflowY: 'auto', fontSize: '0.75rem', background: 'rgba(0,0,0,0.2)' }}>
+                    <div className="glass-card" style={{ padding: '10px', maxHeight: '200px', overflowY: 'auto', fontSize: '0.75rem', background: 'var(--background)' }}>
                         {(autoBuyData.logs || []).length === 0 ? (
                             <div className="label" style={{ textAlign: 'center', padding: '10px' }}>Belum ada log aktifitas.</div>
                         ) : (
                             (autoBuyData.logs || []).map((log: any, idx: number) => (
                                 <div key={idx} style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '10px' }}>
-                                    <span style={{ color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>[{log.timestamp.split(' ')[3]}]</span>
+                                    <span style={{ color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>[{log.timestamp.split(' ')[3]}]</span>
                                     <span style={{
                                         color: log.status === 'SUCCESS' ? '#44ff44' :
                                             log.status === 'FAILED' ? '#ff4444' :
-                                                log.status === 'PING' ? 'var(--accent)' : 'rgba(255,255,255,0.5)',
+                                                log.status === 'PING' ? 'var(--accent)' : 'var(--text-secondary)',
                                         fontWeight: 'bold',
                                         minWidth: '60px'
                                     }}>{log.status}</span>
-                                    <span style={{ color: 'rgba(255,255,255,0.7)' }}>{log.message}</span>
+                                    <span style={{ color: 'var(--text-secondary)' }}>{log.message}</span>
                                 </div>
                             ))
                         )}
                     </div>
                 </div>
 
-                <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)', marginTop: '24px', textAlign: 'center' }}>
+                <p style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginTop: '24px', textAlign: 'center' }}>
                     Sistem mengecek kuota secara berkala via Vercel Cron. Tersinkronisasi dengan Redis.
                 </p>
             </div>
             {showAutoBuyModal && (
-                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.85)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.3)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
                     <div className="glass-card animate-fade" style={{ width: '100%', maxWidth: '500px', maxHeight: '90vh', overflowY: 'auto' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                             <h3 className="gradient-text">Konfigurasi Auto Buy</h3>
-                            <button onClick={() => setShowAutoBuyModal(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
+                            <button onClick={() => setShowAutoBuyModal(false)} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', fontSize: '1.2rem' }}>×</button>
                         </div>
 
                         {tempAutoBuy.step === 'SELECT_FAMILY' && (
                             <div>
-                                <div className="label" style={{ marginBottom: '12px', color: 'rgba(255,255,255,0.7)' }}>Pilih Family dari Bookmark:</div>
+                                <div className="label" style={{ marginBottom: '12px', color: 'var(--text-secondary)' }}>Pilih Family dari Bookmark:</div>
                                 <div style={{ display: 'grid', gap: '10px' }}>
                                     {history.map((item, idx) => (
                                         <button
                                             key={idx}
                                             className="glass-card"
-                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--glass-border)', color: 'white' }}
+                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--border-thin)', color: 'inherit' }}
                                             onClick={() => handleSelectFamilyAutoBuy(item.code, item.name)}
                                             disabled={tempAutoBuy.loading}
                                         >
-                                            <div style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'white' }}>{item.name}</div>
-                                            <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)' }}>{item.code.substring(0, 12)}...</div>
+                                            <div style={{ fontWeight: 'bold', fontSize: '0.9rem', color: 'inherit' }}>{item.name}</div>
+                                            <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>{item.code.substring(0, 12)}...</div>
                                         </button>
                                     ))}
-                                    {history.length === 0 && <p className="label" style={{ color: 'rgba(255,255,255,0.5)' }}>Belum ada bookmark untuk dipilih.</p>}
+                                    {history.length === 0 && <p className="label" style={{ color: 'var(--text-secondary)' }}>Belum ada bookmark untuk dipilih.</p>}
                                 </div>
                             </div>
                         )}
@@ -753,19 +765,19 @@ export default function PurchasePage() {
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                                     <button onClick={() => setTempAutoBuy((p: any) => ({ ...p, step: 'SELECT_FAMILY' }))} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer' }}>← Ganti</button>
-                                    <div className="label" style={{ color: 'rgba(255,255,255,0.7)' }}>Pilih Paket untuk <span style={{ color: 'white' }}>{tempAutoBuy.familyName}</span>:</div>
+                                    <div className="label" style={{ color: 'var(--text-secondary)' }}>Pilih Paket untuk <span style={{ color: 'inherit' }}>{tempAutoBuy.familyName}</span>:</div>
                                 </div>
                                 <div style={{ display: 'grid', gap: '8px' }}>
                                     {tempAutoBuy.packages.map((pkg: any, idx: number) => (
                                         <button
                                             key={idx}
                                             className="glass-card"
-                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--glass-border)', color: 'white' }}
+                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--border-thin)', color: 'inherit' }}
                                             onClick={() => handleConfirmAutoBuy(pkg)}
                                             disabled={tempAutoBuy.loading}
                                         >
-                                            <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'white' }}>{pkg.name}</div>
-                                            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Rp {pkg.price.toLocaleString()} • {pkg.variantName}</div>
+                                            <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'inherit' }}>{pkg.name}</div>
+                                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Rp {pkg.price.toLocaleString()} • {pkg.variantName}</div>
                                         </button>
                                     ))}
                                 </div>
@@ -776,15 +788,15 @@ export default function PurchasePage() {
                             <div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
                                     <button onClick={() => setTempAutoBuy((p: any) => ({ ...p, step: 'SELECT_PACKAGE' }))} style={{ background: 'none', border: 'none', color: 'var(--accent)', cursor: 'pointer' }}>← Ganti Paket</button>
-                                    <div className="label" style={{ color: 'rgba(255,255,255,0.7)' }}>Pilih Kuota untuk Dipantau:</div>
+                                    <div className="label" style={{ color: 'var(--text-secondary)' }}>Pilih Kuota untuk Dipantau:</div>
                                 </div>
-                                <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginBottom: '12px' }}>Pilih satu nama kuota dari akun Anda yang ingin dicek (Jika 0, paket akan dibeli otomatis).</p>
+                                <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '12px' }}>Pilih satu nama kuota dari akun Anda yang ingin dicek (Jika 0, paket akan dibeli otomatis).</p>
                                 <div style={{ display: 'grid', gap: '8px' }}>
                                     {tempAutoBuy.quotas.map((qName: string, idx: number) => (
                                         <button
                                             key={idx}
                                             className="glass-card"
-                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--glass-border)', color: 'white' }}
+                                            style={{ textAlign: 'left', padding: '12px', cursor: 'pointer', border: '1px solid var(--border-thin)', color: 'inherit' }}
                                             onClick={() => finishAutoBuy(tempAutoBuy.selectedPackage, qName)}
                                             disabled={tempAutoBuy.loading}
                                         >
@@ -793,7 +805,7 @@ export default function PurchasePage() {
                                     ))}
                                     <button
                                         className="glass-card"
-                                        style={{ padding: '12px', color: 'rgba(255,255,255,0.5)', borderStyle: 'dashed', cursor: 'pointer' }}
+                                        style={{ padding: '12px', color: 'var(--text-secondary)', borderStyle: 'dashed', cursor: 'pointer' }}
                                         onClick={() => {
                                             const manual = prompt("Masukkan nama kuota secara manual:");
                                             if (manual) finishAutoBuy(tempAutoBuy.selectedPackage, manual);
@@ -807,8 +819,9 @@ export default function PurchasePage() {
                         )}
 
                         {tempAutoBuy.loading && (
-                            <div style={{ textAlign: 'center', padding: '40px' }}>
-                                <div className="label animate-pulse">Sedang mengambil data...</div>
+                            <div style={{ textAlign: 'center', padding: '40px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <div className="loader"></div>
+                                <div className="label">Sedang mengambil data...</div>
                             </div>
                         )}
                     </div>

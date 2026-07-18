@@ -6,8 +6,6 @@ import Link from "next/link";
 export default function Home() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [serverExpiry, setServerExpiry] = useState<string | null>(null);
-  const [serverLoading, setServerLoading] = useState(true);
 
   useEffect(() => {
     fetch("/api/profile")
@@ -20,61 +18,23 @@ export default function Home() {
         console.error(err);
         setLoading(false);
       });
-
-    fetch("/api/server-info")
-      .then(res => res.json())
-      .then(data => {
-        if (data.status === "SUCCESS") setServerExpiry(data.expiry_date);
-        setServerLoading(false);
-      })
-      .catch(() => setServerLoading(false));
   }, []);
 
   if (loading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <div className="gradient-text" style={{ fontSize: '2rem' }}>Loading...</div>
+      <div className="loading-container animate-fade">
+        <div className="loader"></div>
+        <div className="loading-text">Memuat...</div>
       </div>
     );
   }
 
-  const getServerExpiryDisplay = () => {
-    if (serverLoading) return "Menghubungkan...";
-    if (serverExpiry) return serverExpiry;
-
-    // Fallback: Use 31-day logic from base date if API fails or data is empty
-    let expiry = new Date("2026-05-05T00:00:00");
-    const now = new Date();
-    while (expiry <= now) {
-      expiry.setDate(expiry.getDate() + 31);
-    }
-    return expiry.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) + " (Est.)";
-  };
-
   return (
-    <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
-      <header style={{ marginBottom: '32px', textAlign: 'center' }}>
-        <h1 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '8px' }}>MYnyak Engsel Sunset</h1>
+    <main style={{ padding: '40px 24px', maxWidth: '640px', margin: '0 auto' }}>
+      <header style={{ marginBottom: '30px', textAlign: 'center' }}>
+        <h1 className="gradient-text" style={{ fontSize: '1.5rem', marginBottom: '8px' }}>XL DOR</h1>
         <div className="status-badge status-active">Online</div>
       </header>
-
-      <div className="glass-card animate-fade" style={{ marginBottom: '24px', border: '1px solid rgba(255, 165, 0, 0.2)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div className="label" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>Masa Aktif Server:</div>
-          <div className="value" style={{ fontSize: '1rem', color: 'white' }}>{getServerExpiryDisplay()}</div>
-        </div>
-        <div style={{ marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '12px' }}>
-          <a
-            href="https://howdy.id/login"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary"
-            style={{ display: 'block', textAlign: 'center', fontSize: '0.85rem', textDecoration: 'none', padding: '10px' }}
-          >
-            💳 Bayar Perpanjang
-          </a>
-        </div>
-      </div>
 
       {profile ? (
         <div className="glass-card animate-fade">
@@ -96,29 +56,32 @@ export default function Home() {
               <div className="value">{new Date(profile.balance_expired_at * 1000).toLocaleDateString()}</div>
             </div>
           </div>
-          <div style={{ marginTop: '20px', padding: '12px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+          <div style={{ marginTop: '20px', padding: '16px', background: 'var(--background)', borderRadius: '12px', border: '1px solid var(--border-thin)', boxShadow: 'inset 0 4px 6px rgba(0, 0, 0, 0.3)' }}>
             <div className="label">Loyalty Info</div>
             <div className="value" style={{ fontSize: '0.9rem' }}>{profile.point_info}</div>
           </div>
         </div>
       ) : (
-        <div className="glass-card" style={{ textAlign: 'center' }}>
-          <p>Belum ada akun yang aktif.</p>
-          <button className="btn-primary" style={{ marginTop: '20px', width: '100%' }}>Login Sekarang</button>
+        <div className="glass-card animate-fade" style={{ textAlign: 'center' }}>
+          <p style={{ color: 'var(--text-secondary)' }}>Belum ada akun yang aktif. Silakan pilih di menu Ganti Akun / Login.</p>
         </div>
       )}
 
       <div style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <Link href="/packages" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>📦</div>
-            <div className="value" style={{ fontSize: '0.9rem' }}>Paket Saya</div>
+            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-wifi-icon"><path d="M9.5 13.866a4 4 0 0 1 5 .01" /><path d="M12 17h.01" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M7 10.754a8 8 0 0 1 10 0" /></svg>
+              Cek Kouta
+            </div>
           </div>
         </Link>
         <Link href="/purchase" style={{ textDecoration: 'none', color: 'inherit' }}>
           <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center' }}>
-            <div style={{ fontSize: '1.5rem', marginBottom: '8px' }}>🔥</div>
-            <div className="value" style={{ fontSize: '0.9rem' }}>Beli Paket</div>
+            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5" /><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244" /><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05" /></svg>
+              Beli Kouta
+            </div>
           </div>
         </Link>
       </div>

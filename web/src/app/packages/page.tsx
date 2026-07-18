@@ -24,16 +24,17 @@ export default function PackagesPage() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <div className="gradient-text" style={{ fontSize: '2rem' }}>Loading Packages...</div>
-            </div>
+                  <div className="loading-container animate-fade">
+        <div className="loader"></div>
+        <div className="loading-text">Memuat...</div>
+      </div>
         );
     }
 
     return (
         <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
             <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'white' }}>
+                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'inherit' }}>
                     ←
                 </Link>
                 <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Paket Saya</h1>
@@ -49,14 +50,14 @@ export default function PackagesPage() {
                                     <img
                                         src={pkg.icon}
                                         alt=""
-                                        style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', background: 'rgba(255,255,255,0.05)', padding: '4px' }}
+                                        style={{ width: '40px', height: '40px', borderRadius: '8px', objectFit: 'contain', background: 'var(--background)', padding: '4px' }}
                                     />
                                 )}
                                 <div style={{ flex: 1 }}>
                                     <div className="gradient-text" style={{ fontSize: '1.2rem', marginBottom: '4px', display: 'block' }}>
                                         {pkg.name}
                                     </div>
-                                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: '500' }}>
+                                    <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', fontWeight: '500' }}>
                                         {pkg.group_name}
                                     </div>
                                 </div>
@@ -64,7 +65,7 @@ export default function PackagesPage() {
                             </div>
 
                             {/* Divider Tipis */}
-                            <div style={{ height: '1px', background: 'linear-gradient(90deg, var(--glass-border), transparent)', marginBottom: '20px' }}></div>
+                            <div style={{ height: '1px', background: 'linear-gradient(90deg, var(--border-thin), transparent)', marginBottom: '20px' }}></div>
 
                             {/* Benefit / Kuota List */}
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -78,21 +79,21 @@ export default function PackagesPage() {
                                                 )}
                                                 <div style={{ flex: 1 }}>
                                                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                                                        <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.9)', fontWeight: '600' }}>
+                                                        <div style={{ fontSize: '0.85rem', color: 'var(--foreground)', fontWeight: '600' }}>
                                                             {benefit.name}
                                                         </div>
                                                         <div style={{ textAlign: 'right' }}>
                                                             <span style={{ fontSize: '0.9rem', color: 'var(--accent)', fontWeight: 'bold' }}>{benefit.remaining_str}</span>
-                                                            <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginLeft: '4px' }}>/ {benefit.total_str}</span>
+                                                            <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginLeft: '4px' }}>/ {benefit.total_str}</span>
                                                         </div>
                                                     </div>
                                                     {/* Progress Bar Container */}
-                                                    <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', overflow: 'hidden', marginTop: '8px' }}>
+                                                    <div style={{ width: '100%', height: '6px', background: 'var(--border)', borderRadius: '10px', overflow: 'hidden', marginTop: '8px' }}>
                                                         <div
                                                             style={{
                                                                 width: `${percentage}%`,
                                                                 height: '100%',
-                                                                background: 'linear-gradient(90deg, var(--primary), var(--accent))',
+                                                                background: 'var(--accent)',
                                                                 borderRadius: '10px',
                                                                 transition: 'width 1s ease-out'
                                                             }}
@@ -113,15 +114,15 @@ export default function PackagesPage() {
                                 <div style={{
                                     marginTop: '24px',
                                     padding: '10px 14px',
-                                    background: 'rgba(255,204,0,0.05)',
+                                    background: 'var(--background)',
                                     borderRadius: '10px',
-                                    border: '1px solid rgba(255,204,0,0.1)',
+                                    border: '1px solid var(--border-thin)',
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: '8px'
                                 }}>
                                     <div style={{ fontSize: '0.75rem', color: '#ffcc00', fontWeight: '600' }}>
-                                        Berakhir pada: <span style={{ color: 'white' }}>{new Date(pkg.expired_at * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                                        Berakhir pada: <span style={{ color: 'inherit' }}>{new Date(pkg.expired_at * 1000).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                                     </div>
                                 </div>
                             )}

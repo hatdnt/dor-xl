@@ -104,16 +104,17 @@ export default function AccountPage() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-                <div className="gradient-text" style={{ fontSize: '2rem' }}>Loading Accounts...</div>
-            </div>
+                  <div className="loading-container animate-fade">
+        <div className="loader"></div>
+        <div className="loading-text">Memuat...</div>
+      </div>
         );
     }
 
     return (
         <main style={{ padding: '24px', maxWidth: '600px', margin: '0 auto' }}>
             <header style={{ marginBottom: '32px', display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'white' }}>
+                <Link href="/" className="glass-card" style={{ padding: '10px 15px', borderRadius: '12px', textDecoration: 'none', color: 'inherit' }}>
                     ←
                 </Link>
                 <h1 className="gradient-text" style={{ fontSize: '1.5rem' }}>Ganti Akun</h1>
@@ -158,7 +159,7 @@ export default function AccountPage() {
             {showOtpModal && (
                 <div style={{
                     position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                    background: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(8px)',
+                    background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(8px)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 100,
                     padding: '24px'
                 }}>
@@ -172,7 +173,7 @@ export default function AccountPage() {
                                 <input
                                     type="text" value={msisdn} onChange={e => setMsisdn(e.target.value)}
                                     placeholder="Nomor HP (Contoh: 0812...)"
-                                    style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white', marginBottom: '16px' }}
+                                    style={{ width: '100%', padding: '12px', background: 'var(--background)', border: '1px solid var(--border-thin)', borderRadius: '12px', color: 'inherit', marginBottom: '16px' }}
                                 />
                                 <button className="btn-primary" style={{ width: '100%' }} onClick={handleRequestOtp} disabled={authLoading}>
                                     {authLoading ? "Mengirim..." : "Kirim OTP"}
@@ -184,13 +185,13 @@ export default function AccountPage() {
                                 <input
                                     type="text" value={otp} onChange={e => setOtp(e.target.value)}
                                     placeholder="6 Digit Kode OTP"
-                                    style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--glass-border)', borderRadius: '12px', color: 'white', marginBottom: '16px', textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px' }}
+                                    style={{ width: '100%', padding: '12px', background: 'var(--background)', border: '1px solid var(--border-thin)', borderRadius: '12px', color: 'inherit', marginBottom: '16px', textAlign: 'center', fontSize: '1.5rem', letterSpacing: '8px' }}
                                 />
                                 <button className="btn-primary" style={{ width: '100%' }} onClick={handleVerifyOtp} disabled={authLoading}>
                                     {authLoading ? "Memverifikasi..." : "Verifikasi"}
                                 </button>
                                 <button
-                                    style={{ width: '100%', background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.4)', marginTop: '12px', cursor: 'pointer' }}
+                                    style={{ width: '100%', background: 'transparent', border: 'none', color: 'var(--text-secondary)', marginTop: '12px', cursor: 'pointer' }}
                                     onClick={() => setOtpStep(1)}
                                 >
                                     Ganti Nomor
@@ -199,7 +200,7 @@ export default function AccountPage() {
                         )}
 
                         <button
-                            style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: 'white', fontSize: '1.5rem', cursor: 'pointer' }}
+                            style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', color: 'inherit', fontSize: '1.5rem', cursor: 'pointer' }}
                             onClick={() => setShowOtpModal(false)}
                         >
                             ×
