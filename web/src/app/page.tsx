@@ -69,22 +69,26 @@ export default function Home() {
 
       <div style={{ marginTop: '24px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <Link href="/packages" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center' }}>
-            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center', height: '100%' }}>
+            {/* Mengubah flex-direction menjadi column dan menambah padding vertikal */}
+            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px 8px' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-house-wifi-icon"><path d="M9.5 13.866a4 4 0 0 1 5 .01" /><path d="M12 17h.01" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><path d="M7 10.754a8 8 0 0 1 10 0" /></svg>
-              Cek Kouta
+              <span>Cek Kouta</span>
             </div>
           </div>
         </Link>
+
         <Link href="/purchase" style={{ textDecoration: 'none', color: 'inherit' }}>
-          <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center' }}>
-            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div className="glass-card" style={{ cursor: 'pointer', textAlign: 'center', height: '100%' }}>
+            {/* Mengubah flex-direction menjadi column dan menambah padding vertikal */}
+            <div className="value" style={{ fontSize: '0.9rem', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '12px 8px' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-store-icon lucide-store"><path d="M15 21v-5a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v5" /><path d="M17.774 10.31a1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.451 0 1.12 1.12 0 0 0-1.548 0 2.5 2.5 0 0 1-3.452 0 1.12 1.12 0 0 0-1.549 0 2.5 2.5 0 0 1-3.77-3.248l2.889-4.184A2 2 0 0 1 7 2h10a2 2 0 0 1 1.653.873l2.895 4.192a2.5 2.5 0 0 1-3.774 3.244" /><path d="M4 10.95V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8.05" /></svg>
-              Beli Kouta
+              <span>Beli Kouta</span>
             </div>
           </div>
         </Link>
       </div>
+
 
       <div style={{ marginTop: '16px' }}>
         <Link href="/account" style={{ textDecoration: 'none', color: 'inherit' }}>
